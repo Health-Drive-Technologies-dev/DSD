@@ -1,2 +1,2 @@
 # Health-Drive-Technologies
-Dépôt Application
+Good practice: Create a new branch for every new functionnality developped
