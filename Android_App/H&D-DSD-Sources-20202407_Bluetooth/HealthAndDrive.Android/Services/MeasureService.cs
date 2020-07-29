@@ -762,15 +762,15 @@ namespace HealthAndDrive.Droid.Services
                 
                 Log.Debug(LOG_TAG, "!!!!!!!!------------- In ReconnectionBluetooth Fonction -------------------!!!!!!");
                 this.TestlastNotificationMeasure = new NotificationMeasure();
-                this.TestlastNotificationMeasure.NotificationMeasureDate = new DateTimeOffset(2020,07,29,08,28,0, new TimeSpan(2,0,0)).UtcDateTime;
+                this.TestlastNotificationMeasure.NotificationMeasureDate = new DateTimeOffset(2020,07,29,16,38,0, new TimeSpan(2,0,0));
 
                 // Show values
-                Log.Debug(LOG_TAG, $"Last Notification Measure = {this.TestlastNotificationMeasure.NotificationMeasureDate} -------------------!!!!!! ");
+                Log.Debug(LOG_TAG, $"Last Notification Measure = {this.TestlastNotificationMeasure.NotificationMeasureDate.ToString()} -------------------!!!!!! ");
 
-                Log.Debug(LOG_TAG, $"Now time = {DateTimeOffset.UtcNow} -------------------!!!!!! ");
+                Log.Debug(LOG_TAG, $"Now time = {DateTime.Now} -------------------!!!!!! ");
 
                 // Check the age of the last measure
-                Temp = DateTimeOffset.UtcNow - TestlastNotificationMeasure.NotificationMeasureDate;
+                Temp = DateTime.Now - TestlastNotificationMeasure.NotificationMeasureDate;
                 Log.Debug(LOG_TAG, $"Age = {Temp} -------------------!!!!!! ");
 
 
@@ -784,15 +784,15 @@ namespace HealthAndDrive.Droid.Services
             {
                 Log.Debug(LOG_TAG, "!!!!!!!!------------- In ReconnectionBluetooth Fonction -------------------!!!!!!");
                 this.TestlastNotificationMeasure = new NotificationMeasure();
-                this.TestlastNotificationMeasure.NotificationMeasureDate = new DateTimeOffset(2020, 07, 29, 08, 28, 0, new TimeSpan(0, 0, 0)).UtcDateTime;
+                this.TestlastNotificationMeasure.NotificationMeasureDate = new DateTimeOffset(2020, 07, 29, 16, 38, 0, new TimeSpan(2, 0, 0));
 
                 // Show values
-                Log.Debug(LOG_TAG, $"Last Notification Measure = {this.TestlastNotificationMeasure.NotificationMeasureDate} -------------------!!!!!! ");
+                Log.Debug(LOG_TAG, $"Last Notification Measure = {this.TestlastNotificationMeasure.NotificationMeasureDate.ToString()} -------------------!!!!!! ");
 
-                Log.Debug(LOG_TAG, $"Now time = {DateTimeOffset.UtcNow} -------------------!!!!!! ");
+                Log.Debug(LOG_TAG, $"Now time = {DateTime.Now} -------------------!!!!!! ");
 
                 // Check the age of the last measure
-                Temp = DateTimeOffset.UtcNow - TestlastNotificationMeasure.NotificationMeasureDate;
+                Temp = DateTime.Now - TestlastNotificationMeasure.NotificationMeasureDate;
                 Log.Debug(LOG_TAG, $"Age = {Temp} -------------------!!!!!! ");
 
 
@@ -812,12 +812,16 @@ namespace HealthAndDrive.Droid.Services
                 if( this.lastNotificationMeasure != null )
                 {
                     // Check the age of the last measure
-                    this.Temp = DateTimeOffset.UtcNow - this.lastNotificationMeasure.NotificationMeasureDate;
+                    this.Temp = DateTime.Now - this.lastNotificationMeasure.NotificationMeasureDate;
+
+                    Log.Debug(LOG_TAG, $"!!!!!!!!------------- The last Measure Date is {this.lastNotificationMeasure.NotificationMeasureDate.ToString()} -------------------!!!!!! ");
                     this.gapTimeInSeconde = this.Temp.TotalSeconds;
+
+                    Log.Debug(LOG_TAG, $"!!!!!!!!------------- Gap Time in seconds(s) between {nameof(DateTimeOffset.UtcNow)} and Last Measure Date = {this.gapTimeInSeconde} -------------------!!!!!! ");
 
                     // Check the age of the last measure
                     // if most than 15 minutes reconnect the last device
-                    if(this.gapTimeInSeconde >= this.appSettings.RetryBluetoothDelay)
+                    if (this.gapTimeInSeconde >= this.appSettings.RetryBluetoothDelay)
                     {
                         // Publish event Reconnection Bluetooth
                         this.eventAggregator.GetEvent<ReconnectBluetoothEvent>().Publish("");
