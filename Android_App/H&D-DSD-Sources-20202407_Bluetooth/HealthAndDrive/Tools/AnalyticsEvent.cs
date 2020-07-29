@@ -76,5 +76,9 @@ namespace HealthAndDrive.Tools
         /// </summary>
         public static string WidgetViewed = "Widget";
 
+        /// <summary>
+        /// AppCenter Event for Bluetooth reconnection
+        /// </summary>
+        public static string BluetoothReconnectionActivated = "BluetoothReconnectionActivated";
     }
 }

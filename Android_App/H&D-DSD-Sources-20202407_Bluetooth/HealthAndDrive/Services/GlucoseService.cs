@@ -88,6 +88,7 @@ namespace HealthAndDrive.Services
             // Subscribe to the ReconnectionBluetoothEvent
             this.eventAggregator.GetEvent<ReconnectBluetoothEvent>().Subscribe(async (value) =>
             {
+                Analytics.TrackEvent(AnalyticsEvent.BluetoothReconnectionActivated);
                 // awake device
                 await WakeUpMeasureServiceAsync();
             });

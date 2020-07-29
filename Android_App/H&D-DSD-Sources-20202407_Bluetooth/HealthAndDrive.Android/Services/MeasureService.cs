@@ -14,6 +14,7 @@ using HealthAndDrive.Models.Protocol;
 using HealthAndDrive.Protocol;
 using HealthAndDrive.Services;
 using HealthAndDrive.Tools;
+using Microsoft.AppCenter.Analytics;
 using Plugin.BLE;
 using Plugin.BLE.Abstractions.Contracts;
 using Plugin.BLE.Abstractions.Exceptions;
@@ -758,9 +759,10 @@ namespace HealthAndDrive.Droid.Services
             // Show fisrt step 
             if(Delay == 0)
             {
+                
                 Log.Debug(LOG_TAG, "!!!!!!!!------------- In ReconnectionBluetooth Fonction -------------------!!!!!!");
                 this.TestlastNotificationMeasure = new NotificationMeasure();
-                this.TestlastNotificationMeasure.NotificationMeasureDate = new DateTimeOffset(2020,07,24,15,22,0, new TimeSpan(2,0,0));
+                this.TestlastNotificationMeasure.NotificationMeasureDate = new DateTimeOffset(2020,07,29,08,28,0, new TimeSpan(2,0,0)).UtcDateTime;
 
                 // Show values
                 Log.Debug(LOG_TAG, $"Last Notification Measure = {this.TestlastNotificationMeasure.NotificationMeasureDate} -------------------!!!!!! ");
@@ -778,10 +780,31 @@ namespace HealthAndDrive.Droid.Services
 
 
             }
+            if(Delay == 30 || Delay ==60 || Delay == 90)
+            {
+                Log.Debug(LOG_TAG, "!!!!!!!!------------- In ReconnectionBluetooth Fonction -------------------!!!!!!");
+                this.TestlastNotificationMeasure = new NotificationMeasure();
+                this.TestlastNotificationMeasure.NotificationMeasureDate = new DateTimeOffset(2020, 07, 29, 08, 28, 0, new TimeSpan(0, 0, 0)).UtcDateTime;
+
+                // Show values
+                Log.Debug(LOG_TAG, $"Last Notification Measure = {this.TestlastNotificationMeasure.NotificationMeasureDate} -------------------!!!!!! ");
+
+                Log.Debug(LOG_TAG, $"Now time = {DateTimeOffset.UtcNow} -------------------!!!!!! ");
+
+                // Check the age of the last measure
+                Temp = DateTimeOffset.UtcNow - TestlastNotificationMeasure.NotificationMeasureDate;
+                Log.Debug(LOG_TAG, $"Age = {Temp} -------------------!!!!!! ");
+
+
+                gapTimeInSeconde = Temp.TotalSeconds;
+
+                Log.Debug(LOG_TAG, $"!!!!!!!!------------- Gap Time in seconds(s) = {gapTimeInSeconde} -------------------!!!!!! ");
+            }
 
             // Check delay
             if (( Delay >= this.appSettings.RetryBluetoothDelay ) && ( this.MeasureServiceState == MeasureServiceState.WAITING_DATA ))
             {
+                
                 // Re init Delay
                 Delay = 0;
 
@@ -789,7 +812,7 @@ namespace HealthAndDrive.Droid.Services
                 if( this.lastNotificationMeasure != null )
                 {
                     // Check the age of the last measure
-                    this.Temp = DateTimeOffset.Now - this.lastNotificationMeasure.NotificationMeasureDate;
+                    this.Temp = DateTimeOffset.UtcNow - this.lastNotificationMeasure.NotificationMeasureDate;
                     this.gapTimeInSeconde = this.Temp.TotalSeconds;
 
                     // Check the age of the last measure
@@ -820,6 +843,7 @@ namespace HealthAndDrive.Droid.Services
             else
             {
                 Delay++;
+               
             }
 
             // Task Delay

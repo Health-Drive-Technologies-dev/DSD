@@ -182,7 +182,7 @@ namespace HealthAndDrive.Tools
         /// <summary>
         /// Retry Delay in second
         /// </summary>
-        public int RetryBluetoothDelay = 30;
+        public int RetryBluetoothDelay = 300;
 
 
         
