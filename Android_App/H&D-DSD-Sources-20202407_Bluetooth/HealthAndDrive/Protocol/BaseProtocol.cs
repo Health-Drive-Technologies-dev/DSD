@@ -1,11 +1,20 @@
 ﻿using Android.Util;
+using DryIoc;
+using HealthAndDrive.Events;
+using HealthAndDrive.Models;
 using HealthAndDrive.Models.Enums;
+using HealthAndDrive.RepositoryContracts;
+using HealthAndDrive.Services;
+using HealthAndDrive.Tools;
+using Prism.Events;
+using Prism.Ioc;
 using System;
 
 namespace HealthAndDrive.Protocol
 {
     public class BaseProtocol
     {
+      
 
         /// <summary>
         /// The array containg the cumulation of the data notified in a reading session.
@@ -28,6 +37,7 @@ namespace HealthAndDrive.Protocol
         /// The number of packet received by the protocol
         /// </summary>
         protected volatile int PacketCount = 0;
+        public DeviceType ActualDeviceType { get; set; }
 
         /// <summary>
         /// The SessionReading session. 
@@ -36,10 +46,20 @@ namespace HealthAndDrive.Protocol
         /// </summary>
         protected volatile MeasureReadingSession ReadingSession;
 
+        /// <summary>
+        /// App settings
+        /// </summary>
+        private AppSettings AppSettings;
+
+
         public BaseProtocol()
         {
             ReadingSession = new MeasureReadingSession();
+            
+            
         }
+
+                
 
         /// <summary>
         /// This method push the read bytes to the FullData array

@@ -2,7 +2,7 @@
 
 namespace HealthAndDrive.Events
 {
-    public class MeasureChangeEvent : PubSubEvent<byte[]>
+    public class MeasureChangeEventMiaoMiao : PubSubEvent<byte[]>
     {
 
     }

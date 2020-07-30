@@ -69,7 +69,7 @@ namespace HealthAndDrive.Droid.Services
         /// <summary>
         /// Gets or setsthe device type
         /// </summary>
-        private DeviceType DeviceType { get; set; }
+        private DeviceType DeviceTypeConnected { get; set; }
 
         /// <summary>
         /// Gets or sets the BLE
@@ -329,7 +329,7 @@ namespace HealthAndDrive.Droid.Services
                     Log.Debug(LOG_TAG, "RegisterDeviceAsync: " + nameof(this.ConnectedDevice) + " is NULL");
                     return false;
                 }
-
+                
                 Log.Debug(LOG_TAG, "RegisterDeviceAsync: Connection successfull");
                 return true;
             }
@@ -392,8 +392,8 @@ namespace HealthAndDrive.Droid.Services
                     Log.Debug(LOG_TAG, "InitializeBLEServicesAsync: " + nameof(this.UARTService) + " is NULL");
                     return false;
                 }
-
-                Log.Debug(LOG_TAG, "InitializeBLEServicesAsync: Service connection successfull");
+                this.DeviceTypeConnected = device.DeviceType;
+                Log.Debug(LOG_TAG, $"InitializeBLEServicesAsync: Service connection successfull for {this.DeviceTypeConnected} device");
                 return true;
             }
             catch (Exception e)
@@ -531,12 +531,13 @@ namespace HealthAndDrive.Droid.Services
             if (this.eventAggregator == null)
                 eventAggregator = (IEventAggregator)App.Current.Container.Resolve(typeof(IEventAggregator));
 
+            //Bubble, miaomiao in function of the DeviceTypeConnected connected we have a differente response
             DialogBehaviourHolder beahaviour = FreeStyleLibreUtils.RespondToPacketBehaviour(e.Characteristic.Value);
 
             switch (beahaviour.ResponseType)
             {
                 case PacketResponseType.Accept:
-                    eventAggregator.GetEvent<MeasureChangeEvent>().Publish(beahaviour.ReceivedData);
+                    eventAggregator.GetEvent<MeasureChangeEventMiaoMiao>().Publish(beahaviour.ReceivedData);
                     this.MeasureServiceState = MeasureServiceState.RECEIVING_DATA;
                     break;
 
@@ -570,6 +571,7 @@ namespace HealthAndDrive.Droid.Services
             if (this.Adapter != null && this.ConnectedDevice != null)
             {
                 this.Adapter.DisconnectDeviceAsync(this.ConnectedDevice);
+                this.DeviceTypeConnected = new DeviceType();
             }
 
         }
@@ -762,15 +764,15 @@ namespace HealthAndDrive.Droid.Services
                 
                 Log.Debug(LOG_TAG, "!!!!!!!!------------- In ReconnectionBluetooth Fonction -------------------!!!!!!");
                 this.TestlastNotificationMeasure = new NotificationMeasure();
-                this.TestlastNotificationMeasure.NotificationMeasureDate = new DateTimeOffset(2020,07,29,16,38,0, new TimeSpan(2,0,0));
+                this.TestlastNotificationMeasure.NotificationMeasureDate = new DateTimeOffset(2020,07,29,9,10,0, TimeSpan.Zero); //The date is in UTC time
 
                 // Show values
                 Log.Debug(LOG_TAG, $"Last Notification Measure = {this.TestlastNotificationMeasure.NotificationMeasureDate.ToString()} -------------------!!!!!! ");
 
-                Log.Debug(LOG_TAG, $"Now time = {DateTime.Now} -------------------!!!!!! ");
+                Log.Debug(LOG_TAG, $"Now time = {DateTime.UtcNow} -------------------!!!!!! ");
 
                 // Check the age of the last measure
-                Temp = DateTime.Now - TestlastNotificationMeasure.NotificationMeasureDate;
+                Temp = DateTime.UtcNow - TestlastNotificationMeasure.NotificationMeasureDate;
                 Log.Debug(LOG_TAG, $"Age = {Temp} -------------------!!!!!! ");
 
 
@@ -784,15 +786,15 @@ namespace HealthAndDrive.Droid.Services
             {
                 Log.Debug(LOG_TAG, "!!!!!!!!------------- In ReconnectionBluetooth Fonction -------------------!!!!!!");
                 this.TestlastNotificationMeasure = new NotificationMeasure();
-                this.TestlastNotificationMeasure.NotificationMeasureDate = new DateTimeOffset(2020, 07, 29, 16, 38, 0, new TimeSpan(2, 0, 0));
+                this.TestlastNotificationMeasure.NotificationMeasureDate = new DateTimeOffset(2020, 07, 29, 9, 10, 0, TimeSpan.Zero);
 
                 // Show values
                 Log.Debug(LOG_TAG, $"Last Notification Measure = {this.TestlastNotificationMeasure.NotificationMeasureDate.ToString()} -------------------!!!!!! ");
 
-                Log.Debug(LOG_TAG, $"Now time = {DateTime.Now} -------------------!!!!!! ");
+                Log.Debug(LOG_TAG, $"Now time = {DateTime.UtcNow} -------------------!!!!!! ");
 
                 // Check the age of the last measure
-                Temp = DateTime.Now - TestlastNotificationMeasure.NotificationMeasureDate;
+                Temp = DateTime.UtcNow - TestlastNotificationMeasure.NotificationMeasureDate;
                 Log.Debug(LOG_TAG, $"Age = {Temp} -------------------!!!!!! ");
 
 
@@ -812,7 +814,7 @@ namespace HealthAndDrive.Droid.Services
                 if( this.lastNotificationMeasure != null )
                 {
                     // Check the age of the last measure
-                    this.Temp = DateTime.Now - this.lastNotificationMeasure.NotificationMeasureDate;
+                    this.Temp = DateTime.UtcNow - this.lastNotificationMeasure.NotificationMeasureDate;
 
                     Log.Debug(LOG_TAG, $"!!!!!!!!------------- The last Measure Date is {this.lastNotificationMeasure.NotificationMeasureDate.ToString()} -------------------!!!!!! ");
                     this.gapTimeInSeconde = this.Temp.TotalSeconds;

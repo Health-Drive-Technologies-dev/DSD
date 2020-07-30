@@ -106,6 +106,7 @@ namespace HealthAndDrive.Repositories
         public List<GlucoseMeasure> GetLastDayMeasuresByUser(string userId)
         {
             DateTime oldDate = DateTime.Now.AddHours(-24);
+            
             return this.realm.All<GlucoseMeasure>().Where(m => m.UserId == userId
                                                       && (m.RealDateTimeOffset > oldDate && m.RealDateTimeOffset <= DateTime.Now)).OrderBy(m => m.RealDateTimeOffset).ToList();
         }

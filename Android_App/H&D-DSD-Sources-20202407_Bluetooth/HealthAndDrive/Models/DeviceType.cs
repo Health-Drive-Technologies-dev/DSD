@@ -11,7 +11,13 @@
         /// The MiaoMiao device
         /// https://miaomiao.cool/
         /// </summary>
-        MiaoMiao1 = 0
+        MiaoMiao = 0,
+        /// <summary>
+        /// The Bubble device
+        /// https://www.bubblesmartreader.com/
+        /// </summary>
+        Bubble = 1
+
     }
 
 }

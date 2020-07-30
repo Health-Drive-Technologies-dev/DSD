@@ -30,7 +30,7 @@ namespace HealthAndDrive.Services
             }
 
             // NOTE: For the H&D MVP, we only look for "MiaoMiao"
-            if (!result.Device.Name.Contains(MiaoMiaoProtocol.MIAO_MIAO_DEVICE_NAME))
+            if (!result.Device.Name.Contains(MiaoMiaoProtocol.MIAO_MIAO_DEVICE_NAME) && !result.Device.Name.Contains(BubbleProtocol.BUBBLE_DEVICE_NAME))
             {
                 return;
             }

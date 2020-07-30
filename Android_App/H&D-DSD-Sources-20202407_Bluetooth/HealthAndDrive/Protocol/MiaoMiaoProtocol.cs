@@ -3,6 +3,8 @@ using Android.Util;
 using HealthAndDrive.Events;
 using HealthAndDrive.Models;
 using HealthAndDrive.Models.Enums;
+using HealthAndDrive.Repositories;
+using HealthAndDrive.RepositoryContracts;
 using HealthAndDrive.Services;
 using HealthAndDrive.Tools;
 using Java.Util;
@@ -79,13 +81,13 @@ namespace HealthAndDrive.Protocol
 
         private AppSettings settings;
 
-        public MiaoMiaoProtocol(IEventAggregator eventAggregator, GlucoseService glucoseService, AppSettings settings)
+        public MiaoMiaoProtocol(IEventAggregator eventAggregator, IUserRepository userRepository, GlucoseService glucoseService, AppSettings settings)
         {
             this.GlucoseService = glucoseService;
             this.EventAggregator = eventAggregator;
             this.settings = settings;
 
-            this.EventAggregator.GetEvent<MeasureChangeEvent>().Subscribe((value) =>
+            this.EventAggregator.GetEvent<MeasureChangeEventMiaoMiao>().Subscribe((value) =>
             {
                 ProcessPacket(value);
             });

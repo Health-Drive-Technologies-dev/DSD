@@ -65,7 +65,7 @@ namespace HealthAndDrive
         {
             var config = new RealmConfiguration()
             {
-                SchemaVersion = 25
+                SchemaVersion = 26
             };
 
             containerRegistry.RegisterSingleton<AppSettings>();
@@ -83,10 +83,14 @@ namespace HealthAndDrive
 
             var eventAggregator = Container.Resolve<IEventAggregator>();
             var appSettings = Container.Resolve<AppSettings>();
+            var userRepository = Container.Resolve<IUserRepository>();
 
             var glucoseService = new GlucoseService(eventAggregator, Container.Resolve<IUserRepository>(), Container.Resolve<IUserSettingsRepository>(), Container.Resolve<ISensorRepository>(), Container.Resolve<IGlucoseMeasureRepository>(), appSettings);
             containerRegistry.RegisterInstance(glucoseService);
-            containerRegistry.RegisterInstance(new MiaoMiaoProtocol(eventAggregator, glucoseService, appSettings));
+            containerRegistry.RegisterInstance(new MiaoMiaoProtocol(eventAggregator, userRepository, glucoseService, appSettings));
+            containerRegistry.RegisterInstance(new BubbleProtocol(eventAggregator, userRepository, glucoseService, appSettings));
+            
+            
         }
 
         /// <summary>

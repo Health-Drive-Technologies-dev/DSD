@@ -17,7 +17,7 @@ namespace HealthAndDrive.Models
         /// </summary>
         public string Name { get; set; }
 
-        
+        public DeviceType DeviceType { get; set; }
         public Device()
         {
         }
@@ -31,6 +31,18 @@ namespace HealthAndDrive.Models
         {
             this.Id = id;
             this.Name = name;
+            if (this.Name.Contains("miao"))
+            {
+                this.DeviceType = DeviceType.MiaoMiao;
+            }
+            if (this.Name.Contains("Bubble"))
+            {
+                this.DeviceType = DeviceType.Bubble;
+            }
+            else
+            {
+                this.DeviceType = DeviceType.MiaoMiao;
+            }
         }
 
         /// <summary>
@@ -41,6 +53,18 @@ namespace HealthAndDrive.Models
         {
             this.Id = device.Address;
             this.Name = device.Name;
+            if (this.Name.Contains("miao"))
+            {
+                this.DeviceType = DeviceType.MiaoMiao;
+            }
+            if (this.Name.Contains("Bubble"))
+            {
+                this.DeviceType = DeviceType.Bubble;
+            }
+            else
+            {
+                this.DeviceType = DeviceType.MiaoMiao;
+            }
         }
 
         /// <summary>
@@ -55,6 +79,18 @@ namespace HealthAndDrive.Models
             }
 
             this.Name = device.Name;
+            if (this.Name.Contains("miao"))
+            {
+                this.DeviceType = DeviceType.MiaoMiao;
+            }
+            if (this.Name.Contains("Bubble"))
+            {
+                this.DeviceType = DeviceType.Bubble;
+            }
+            else
+            {
+                this.DeviceType = DeviceType.MiaoMiao;
+            }
         }
 
         public int CompareTo(Device other)
