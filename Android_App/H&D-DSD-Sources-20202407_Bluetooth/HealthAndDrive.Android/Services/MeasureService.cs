@@ -118,6 +118,11 @@ namespace HealthAndDrive.Droid.Services
         private TimeSpan Temp;
 
         /// <summary>
+        /// Info for battery for the bubble sensor
+        /// </summary>
+        private byte[] BubbleBatteryInfo;
+
+        /// <summary>
         /// Used For time convertion in secondes
         /// </summary>
         private double gapTimeInSeconde;
@@ -193,7 +198,7 @@ namespace HealthAndDrive.Droid.Services
 
             // Exit event
             eventAggregator.GetEvent<ExitApplicationEvent>().Subscribe(()=> { RefreshWidget(); });
-
+            
 
         }
 
@@ -545,8 +550,8 @@ namespace HealthAndDrive.Droid.Services
                     {
                         //We concatenate the battery level into the data in order to push to extract the data
                         byte[] BatteryAndReceivedData = new byte[beahaviour.ReceivedData.Length + beahaviour.BatteryInfo.Length];
-                        Buffer.BlockCopy(beahaviour.BatteryInfo, 0, BatteryAndReceivedData, 0,beahaviour.BatteryInfo.Length);
-                        Buffer.BlockCopy(beahaviour.ReceivedData, 0, BatteryAndReceivedData, beahaviour.BatteryInfo.Length, beahaviour.ReceivedData.Length);
+                        Buffer.BlockCopy(this.BubbleBatteryInfo, 0, BatteryAndReceivedData, 0,this.BubbleBatteryInfo.Length);
+                        Buffer.BlockCopy(beahaviour.ReceivedData, 0, BatteryAndReceivedData, this.BubbleBatteryInfo.Length, beahaviour.ReceivedData.Length);
                         Log.Debug(LOG_TAG, $"The battery is : {beahaviour.BatteryInfo.ToString()}, with a length of {beahaviour.BatteryInfo.Length} and " +
                             $"the length of the ReceivedData is {beahaviour.ReceivedData.Length}");
                         eventAggregator.GetEvent<MeasureChangeEventBubble>().Publish(BatteryAndReceivedData);
@@ -555,6 +560,7 @@ namespace HealthAndDrive.Droid.Services
                     break;
 
                 case PacketResponseType.AnswerBack:
+                    this.BubbleBatteryInfo = beahaviour.BatteryInfo;
                     WriteCharacteristicAsync(MiaoMiaoProtocol.NRF_UART_RX, beahaviour.Response);
                     break;
 
@@ -586,6 +592,7 @@ namespace HealthAndDrive.Droid.Services
             {
                 this.Adapter.DisconnectDeviceAsync(this.ConnectedDevice);
                 this.DeviceTypeConnected = new DeviceType();
+                this.BubbleBatteryInfo = null;
             }
 
         }
