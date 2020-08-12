@@ -6,6 +6,7 @@ using HealthAndDrive.Models.Enums;
 using HealthAndDrive.RepositoryContracts;
 using HealthAndDrive.Services;
 using HealthAndDrive.Tools;
+using Java.Util;
 using Prism.Events;
 using Prism.Ioc;
 using System;
@@ -14,8 +15,10 @@ namespace HealthAndDrive.Protocol
 {
     public class BaseProtocol
     {
-      
 
+        
+
+        public static string LOG_TAG = "BaseProtocol";
         /// <summary>
         /// The array containg the cumulation of the data notified in a reading session.
         /// As the receiving is divided, we need to rebuild the full data array.
@@ -46,14 +49,12 @@ namespace HealthAndDrive.Protocol
         /// </summary>
         protected volatile MeasureReadingSession ReadingSession;
 
-        /// <summary>
-        /// App settings
-        /// </summary>
-        private AppSettings AppSettings;
+    
 
 
         public BaseProtocol()
         {
+           
             ReadingSession = new MeasureReadingSession();
             
             
@@ -80,6 +81,20 @@ namespace HealthAndDrive.Protocol
             Array.Copy(data, 0, FullData, AcumulatedSize, data.Length - bytesToIgnore);
             AcumulatedSize += data.Length - bytesToIgnore;
         }
+
+        /// <summary>
+        /// This method push the read bytes to the FullData array
+        /// Among the PROTOCOL BUBBLE, data starts if first_byte = 0x28 and ends if last_byte = 0x29
+        /// </summary>
+        /// <param name="data"></param>
+        protected void PushDataBubble(byte[] data)
+        {
+            
+            Array.Copy(data, 4, FullData, AcumulatedSize, data.Length-4);
+            AcumulatedSize += data.Length - 4;
+        }
+
+
 
     }
 }

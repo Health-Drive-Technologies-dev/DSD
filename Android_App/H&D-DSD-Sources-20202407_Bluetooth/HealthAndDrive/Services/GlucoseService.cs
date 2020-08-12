@@ -431,11 +431,11 @@ namespace HealthAndDrive.Services
                 }
 
                 // step 4 : reset
-                // MIAOMIAO PROTOCOL
+                // MIAOMIAO AND BUBBLE PROTOCOL
                 if (IsSuscribed)
                 {
                     List<byte[]> resetPacket = new List<byte[]>();
-                    resetPacket.Add(FreeStyleLibreUtils.GenerateResetPacket());
+                    resetPacket.Add(FreeStyleLibreUtils.GenerateResetPacket(device.DeviceType));
                     IsWritten = await this.measureService.WriteCharacteristicAsync(MiaoMiaoProtocol.NRF_UART_RX, resetPacket);
                 }
 

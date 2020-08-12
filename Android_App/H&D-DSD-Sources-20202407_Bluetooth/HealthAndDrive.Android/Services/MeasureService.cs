@@ -531,13 +531,26 @@ namespace HealthAndDrive.Droid.Services
             if (this.eventAggregator == null)
                 eventAggregator = (IEventAggregator)App.Current.Container.Resolve(typeof(IEventAggregator));
 
-            //Bubble, miaomiao in function of the DeviceTypeConnected connected we have a differente response
-            DialogBehaviourHolder beahaviour = FreeStyleLibreUtils.RespondToPacketBehaviour(e.Characteristic.Value);
+            //Bubble, miaomiao in function of the DeviceTypeConnected connected we have a different response
+            DialogBehaviourHolder beahaviour = FreeStyleLibreUtils.RespondToPacketBehaviour(e.Characteristic.Value, this.DeviceTypeConnected);
 
             switch (beahaviour.ResponseType)
             {
                 case PacketResponseType.Accept:
-                    eventAggregator.GetEvent<MeasureChangeEventMiaoMiao>().Publish(beahaviour.ReceivedData);
+                    if(this.DeviceTypeConnected == DeviceType.MiaoMiao)
+                    {
+                        eventAggregator.GetEvent<MeasureChangeEventMiaoMiao>().Publish(beahaviour.ReceivedData);
+                    }
+                    else
+                    {
+                        //We concatenate the battery level into the data in order to push to extract the data
+                        byte[] BatteryAndReceivedData = new byte[beahaviour.ReceivedData.Length + beahaviour.BatteryInfo.Length];
+                        Buffer.BlockCopy(beahaviour.BatteryInfo, 0, BatteryAndReceivedData, 0,beahaviour.BatteryInfo.Length);
+                        Buffer.BlockCopy(beahaviour.ReceivedData, 0, BatteryAndReceivedData, beahaviour.BatteryInfo.Length, beahaviour.ReceivedData.Length);
+                        Log.Debug(LOG_TAG, $"The battery is : {beahaviour.BatteryInfo.ToString()}, with a length of {beahaviour.BatteryInfo.Length} and " +
+                            $"the length of the ReceivedData is {beahaviour.ReceivedData.Length}");
+                        eventAggregator.GetEvent<MeasureChangeEventBubble>().Publish(BatteryAndReceivedData);
+                    }
                     this.MeasureServiceState = MeasureServiceState.RECEIVING_DATA;
                     break;
 
@@ -545,6 +558,7 @@ namespace HealthAndDrive.Droid.Services
                     WriteCharacteristicAsync(MiaoMiaoProtocol.NRF_UART_RX, beahaviour.Response);
                     break;
 
+                //Further evolution should be to have an error count to retry 2 or 3 time before reconnecting
                 case PacketResponseType.Refuse:
                     this.MeasureServiceState = MeasureServiceState.REFUSED_DATA_THEN_WAIT;
                     break;

@@ -1,6 +1,8 @@
 ﻿using Android.Util;
+using HealthAndDrive.Models;
 using HealthAndDrive.Models.Protocol;
 using HealthAndDrive.Tools;
+using System.Collections.Generic;
 
 namespace HealthAndDrive.Protocol
 {
@@ -75,11 +77,31 @@ namespace HealthAndDrive.Protocol
         /// Generate a RESET packet to be sent to the device
         /// </summary>
         /// <returns>The packet to send</returns>
-        public static byte[] GenerateResetPacket()
+        public static byte[] GenerateResetPacket(DeviceType deviceType)
         {
-            byte[] packet = new byte[1];
-            packet[0] = 0xf0; // Put in a constant ? 
-            return packet;
+
+            if (deviceType == DeviceType.Bubble)
+            {
+                byte[] resetBytes = new byte[3];
+                resetBytes[0] = 0x00;
+                resetBytes[1] = 0x01;
+                resetBytes[2] = 0x05;
+                return resetBytes;
+            }
+            else if (deviceType == DeviceType.MiaoMiao)
+            {
+                byte[] packet = new byte[1];
+                packet[0] = 0xf0; // Put in a constant ? 
+                return packet;
+            }
+            // BY DEFAULT RETURN MIAOMIAO RESET CODE
+            else
+            {
+                byte[] packet = new byte[1];
+                packet[0] = 0xf0; // Put in a constant ? 
+                return packet;
+            }
+
         }
 
 
@@ -93,57 +115,158 @@ namespace HealthAndDrive.Protocol
         /// </summary>
         /// <param name="DialogProtocolHolder">Holds the </param>
         /// <returns></returns>
-        public static DialogBehaviourHolder RespondToPacketBehaviour(byte[] packet)
+        public static DialogBehaviourHolder RespondToPacketBehaviour(byte[] packet, DeviceType deviceType)
         {
             DialogBehaviourHolder holder = new DialogBehaviourHolder();
             holder.ReceivedData = packet;
 
-            // MIAOMIAO PROTOCOL
-            if (packet.Length == 1 && packet[0] == 0x32)
+            if (deviceType == DeviceType.MiaoMiao)
             {
-                byte[] resetallowNewSensorValue = new byte[2];
-                byte[] frequency = new byte[2];
-                byte[] ack = new byte[1];
+                // MIAOMIAO PROTOCOL
+                if (packet.Length == 1 && packet[0] == 0x32)
+                {
+                    byte[] resetallowNewSensorValue = new byte[2];
+                    byte[] frequency = new byte[2];
+                    byte[] ack = new byte[1];
+
+                    // MIAOMIAO PROTOCOL
+                    resetallowNewSensorValue[0] = 0xD3;
+                    resetallowNewSensorValue[1] = 0x01;
+
+                    frequency[0] = 0xD1;
+                    frequency[1] = 0x01;
+
+                    holder.Response.Add(resetallowNewSensorValue);
+                    holder.Response.Add(frequency);
+                    holder.Response.Add(ack);
+
+                    holder.ResponseType = PacketResponseType.AnswerBack;
+
+                }
 
                 // MIAOMIAO PROTOCOL
-                resetallowNewSensorValue[0] = 0xD3;
-                resetallowNewSensorValue[1] = 0x01;
+                // received when the Miaomiao is not connected to the sensor
+                else if (packet.Length == 1 && packet[0] == 0x34)
+                {
+                    holder.ResponseType = PacketResponseType.Ignore;
+                }
 
-                frequency[0] = 0xD1;
-                frequency[1] = 0x01;
+                // MIAOMIAO PROTOCOL
+                // I don't know what to do with this ==> we will need to raise an error in this case
+                // CAUTION : The behaviour should no be PacketResponseType.Ignore in this case 
+                else if (packet.Length == 2)
+                {
+                    holder.ResponseType = PacketResponseType.Refuse;
+                }
 
-                holder.Response.Add(resetallowNewSensorValue);
-                holder.Response.Add(frequency);
-                holder.Response.Add(ack);
+                // MIAOMIAO PROTOCOL
+                // The data received is accepted. We will process it
+                else
+                {
+                    holder.ResponseType = PacketResponseType.Accept;
+                }
 
-                holder.ResponseType = PacketResponseType.AnswerBack;
-
+                Log.Debug(LOG_TAG, $"FreeStyleLibreUtils.RespondToPacket : answer={holder.ResponseType}");
+                return holder;
             }
-
-            // MIAOMIAO PROTOCOL
-            // received when the Miaomiao is not connected to the sensor
-            else if (packet.Length == 1 && packet[0] == 0x34)
+            if(deviceType == DeviceType.Bubble)
             {
-                holder.ResponseType = PacketResponseType.Ignore;
-            }
+                int first = 0xff & packet[0];
 
-            // MIAOMIAO PROTOCOL
-            // I don't know what to do with this ==> we will need to raise an error in this case
-            // CAUTION : The behaviour should no be PacketResponseType.Ignore in this case 
-            else if (packet.Length == 2)
-            {
-                holder.ResponseType = PacketResponseType.Refuse;
+                if(first == 0x80)
+                {
+                    holder.ResponseType = PacketResponseType.AnswerBack;
+                    List<byte[]> AnswerBackPacket = new List<byte[]>();
+                    byte[] PacketAnswer = new byte[6];
+                    PacketAnswer[0] = 0x02;
+                    PacketAnswer[1] = 0x01;
+                    PacketAnswer[2] = 0x00;
+                    PacketAnswer[3] = 0x00;
+                    PacketAnswer[4] = 0x00;
+                    PacketAnswer[5] = 0x2B;
+                    holder.BatteryInfo = new byte[0];
+                    //Value of the Battery level
+                    holder.BatteryInfo.SetValue(packet[4],0);
+                    holder.Response.Add(PacketAnswer);
+                    
+                }
+                else if (first == 0xC0)
+                {
+                    holder.ResponseType = PacketResponseType.Ignore;
+                }
+                else if(first ==0xC1)
+                {
+                    holder.ResponseType = PacketResponseType.Ignore;
+                }
+                else if(first == 0xBF)
+                {
+                    //Further evolution should be to have an error count to retry 2 or 3 time before reconnecting
+                    holder.ResponseType = PacketResponseType.Refuse; 
+                }
+                // BUBBLE PROTOCOL
+                // The data received is accepted. We will process it
+                else if(first == 0x82)
+                {
+                    holder.ResponseType = PacketResponseType.Accept;
+                }
+                else
+                {
+                    //Ignore the data in order to ask an automated bluetooth reconnection in 15 min.
+                    holder.ResponseType = PacketResponseType.Ignore;
+                }
+                Log.Debug(LOG_TAG, $"FreeStyleLibreUtils.RespondToPacket : answer={holder.ResponseType}");
+                return holder;
             }
-
-            // MIAOMIAO PROTOCOL
-            // The data received is accepted. We will process it
+            // BY DEFAULT THE RESPONSE IS THE MIAOMIAO'S ONE
             else
             {
-                holder.ResponseType = PacketResponseType.Accept;
-            }
+                if (packet.Length == 1 && packet[0] == 0x32)
+                {
+                    byte[] resetallowNewSensorValue = new byte[2];
+                    byte[] frequency = new byte[2];
+                    byte[] ack = new byte[1];
 
-            Log.Debug(LOG_TAG, $"FreeStyleLibreUtils.RespondToPacket : answer={holder.ResponseType}");
-            return holder;
+                    // MIAOMIAO PROTOCOL
+                    resetallowNewSensorValue[0] = 0xD3;
+                    resetallowNewSensorValue[1] = 0x01;
+
+                    frequency[0] = 0xD1;
+                    frequency[1] = 0x01;
+
+                    holder.Response.Add(resetallowNewSensorValue);
+                    holder.Response.Add(frequency);
+                    holder.Response.Add(ack);
+
+                    holder.ResponseType = PacketResponseType.AnswerBack;
+
+                }
+
+                // MIAOMIAO PROTOCOL
+                // received when the Miaomiao is not connected to the sensor
+                else if (packet.Length == 1 && packet[0] == 0x34)
+                {
+                    holder.ResponseType = PacketResponseType.Ignore;
+                }
+
+                // MIAOMIAO PROTOCOL
+                // I don't know what to do with this ==> we will need to raise an error in this case
+                // CAUTION : The behaviour should no be PacketResponseType.Ignore in this case 
+                else if (packet.Length == 2)
+                {
+                    holder.ResponseType = PacketResponseType.Refuse;
+                }
+
+                // MIAOMIAO PROTOCOL
+                // The data received is accepted. We will process it
+                else
+                {
+                    holder.ResponseType = PacketResponseType.Accept;
+                }
+
+                Log.Debug(LOG_TAG, $"FreeStyleLibreUtils.RespondToPacket : answer={holder.ResponseType}");
+                return holder;
+               
+            }
         }
 
     }

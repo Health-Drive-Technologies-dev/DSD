@@ -20,7 +20,11 @@ namespace HealthAndDrive.Models.Protocol
         /// Gets or sets our data answer
         /// </summary>
         public List<byte[]> Response { get; set; }
-
+        /// <summary>
+        /// Gets or sets data info for batterylevel
+        /// </summary>
+        public byte[] BatteryInfo { get; set; }
+       
         public DialogBehaviourHolder()
         {
             this.Response = new List<byte[]>();

@@ -570,7 +570,8 @@ namespace HealthAndDrive.ViewModels
             });
 
             // Register to events
-            this.eventAggregator.GetEvent<BluetoothStateChangeEvent>().Subscribe((value) => {
+            this.eventAggregator.GetEvent<BluetoothStateChangeEvent>().Subscribe((value) =>
+            {
 
                 switch (value)
                 {
@@ -583,7 +584,8 @@ namespace HealthAndDrive.ViewModels
                 }
             });
 
-            this.eventAggregator.GetEvent<NotificationMeasureEvent>().Subscribe(value => {
+            this.eventAggregator.GetEvent<NotificationMeasureEvent>().Subscribe(value =>
+            {
                 this.CalibrationSourceValue = value.NewMeasure;
                 this.CalibrationRevisedValue = value.NewMeasure;
             });
@@ -747,10 +749,13 @@ namespace HealthAndDrive.ViewModels
 
             if (this.HasSubscribed)
             {
-                // MIAOMIAO PROTOCOL
+
+                // MIAOMIAO AND BUBBLE PROTOCOL
                 List<byte[]> resetPacket = new List<byte[]>();
-                resetPacket.Add(FreeStyleLibreUtils.GenerateResetPacket());
+                resetPacket.Add(FreeStyleLibreUtils.GenerateResetPacket(device.DeviceType));
                 this.HasReadFirstMeasure = await MeasureService.WriteCharacteristicAsync(MiaoMiaoProtocol.NRF_UART_RX, resetPacket);
+
+
             }
             await Task.Delay(1500);
 

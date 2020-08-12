@@ -77,7 +77,7 @@ namespace HealthAndDrive.Protocol
         /// <summary>
         /// Gets or sets the eventAggregator reference
         /// </summary>
-        private IEventAggregator EventAggregator { get; set;  }
+        private IEventAggregator EventAggregator { get; set; }
 
         private AppSettings settings;
 
@@ -86,7 +86,7 @@ namespace HealthAndDrive.Protocol
             this.GlucoseService = glucoseService;
             this.EventAggregator = eventAggregator;
             this.settings = settings;
-
+            
             this.EventAggregator.GetEvent<MeasureChangeEventMiaoMiao>().Subscribe((value) =>
             {
                 ProcessPacket(value);
@@ -229,7 +229,7 @@ namespace HealthAndDrive.Protocol
             }
 
             bool isReadingOver = IsReadingOver();
-            PacketCount += 1;
+            PacketCount += 1; //Inutile?
 
             // Only if the reading is over, we process the data
             if (isReadingOver)
@@ -263,11 +263,6 @@ namespace HealthAndDrive.Protocol
 
         }
 
-
-
-        /// <summary>
-        /// This method process the FullData. Once the last byte is received, we process the consolidated array.
-        /// </summary>
         private void ProcessData()
         {
 
@@ -319,8 +314,8 @@ namespace HealthAndDrive.Protocol
                 measure.Timestamp = sensorStartTime + time * this.settings.MILLISECONDS_IN_MINUTE;
                 measure.RealDateTimeOffset = DateTimeOffset.FromUnixTimeMilliseconds(sensorStartTime + time * this.settings.MILLISECONDS_IN_MINUTE);
                 measure.SensorTime = time;
-                measure.GlucoseLevelMGDL = (float) Math.Round((decimal)measure.GlucoseLevelRaw / 10);
-                measure.GlucoseLevelMMOL = (float) FreeStyleLibreUtils.ConvertMGDLToMMolPerLiter(this.settings, Math.Round((double)measure.GlucoseLevelRaw / 10));
+                measure.GlucoseLevelMGDL = (float)Math.Round((decimal)measure.GlucoseLevelRaw / 10);
+                measure.GlucoseLevelMMOL = (float)FreeStyleLibreUtils.ConvertMGDLToMMolPerLiter(this.settings, Math.Round((double)measure.GlucoseLevelRaw / 10));
                 ReadingSession.PushHistoryMeasure(measure);
             }
 
@@ -350,7 +345,7 @@ namespace HealthAndDrive.Protocol
             }
 
             // The current measure
-            if(ReadingSession.TrendMeasures.Count > 0)
+            if (ReadingSession.TrendMeasures.Count > 0)
             {
                 ReadingSession.CurrentMeasure = ReadingSession.TrendMeasures[0];
             }
@@ -365,6 +360,10 @@ namespace HealthAndDrive.Protocol
 
             // Notify the GlucoseService that it's done
             this.GlucoseService.HandleReadingSession(ReadingSession);
-        } 
+        }
+
+
+
+
     }
 }
