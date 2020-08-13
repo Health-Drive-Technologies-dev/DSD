@@ -24,7 +24,12 @@ namespace HealthAndDrive.Models.Protocol
         /// Gets or sets data info for batterylevel
         /// </summary>
         public byte[] BatteryInfo { get; set; }
-       
+
+        /// <summary>
+        /// Gets or sets data info for Sensor Id
+        /// </summary>
+        public byte[] SensorIdInfo { get; set; }
+
         public DialogBehaviourHolder()
         {
             this.Response = new List<byte[]>();

@@ -123,6 +123,11 @@ namespace HealthAndDrive.Droid.Services
         private byte[] BubbleBatteryInfo;
 
         /// <summary>
+        /// Info for Sensor Id
+        /// </summary>
+        private byte[] SensorIdInfo;
+
+        /// <summary>
         /// Used For time convertion in secondes
         /// </summary>
         private double gapTimeInSeconde;
@@ -197,8 +202,8 @@ namespace HealthAndDrive.Droid.Services
             this.ReconnectBluetooth();
 
             // Exit event
-            eventAggregator.GetEvent<ExitApplicationEvent>().Subscribe(()=> { RefreshWidget(); });
-            
+            eventAggregator.GetEvent<ExitApplicationEvent>().Subscribe(() => { RefreshWidget(); });
+
 
         }
 
@@ -334,7 +339,7 @@ namespace HealthAndDrive.Droid.Services
                     Log.Debug(LOG_TAG, "RegisterDeviceAsync: " + nameof(this.ConnectedDevice) + " is NULL");
                     return false;
                 }
-                
+
                 Log.Debug(LOG_TAG, "RegisterDeviceAsync: Connection successfull");
                 return true;
             }
@@ -542,16 +547,21 @@ namespace HealthAndDrive.Droid.Services
             switch (beahaviour.ResponseType)
             {
                 case PacketResponseType.Accept:
-                    if(this.DeviceTypeConnected == DeviceType.MiaoMiao)
+                    if (this.DeviceTypeConnected == DeviceType.MiaoMiao)
                     {
                         eventAggregator.GetEvent<MeasureChangeEventMiaoMiao>().Publish(beahaviour.ReceivedData);
                     }
                     else
                     {
-                        //We concatenate the battery level into the data in order to push to extract the data
-                        byte[] BatteryAndReceivedData = new byte[beahaviour.ReceivedData.Length + beahaviour.BatteryInfo.Length];
-                        Buffer.BlockCopy(this.BubbleBatteryInfo, 0, BatteryAndReceivedData, 0,this.BubbleBatteryInfo.Length);
-                        Buffer.BlockCopy(beahaviour.ReceivedData, 0, BatteryAndReceivedData, this.BubbleBatteryInfo.Length, beahaviour.ReceivedData.Length);
+                        //We concatenate the battery level and SensorId info into the data in order to push to extract the data
+                        byte[] BatteryAndReceivedData = new byte[beahaviour.ReceivedData.Length + beahaviour.BatteryInfo.Length + beahaviour.SensorIdInfo.Length];
+                        Buffer.BlockCopy(this.BubbleBatteryInfo, 0, BatteryAndReceivedData, 0, this.BubbleBatteryInfo.Length);
+                        Buffer.BlockCopy(this.SensorIdInfo, 0, BatteryAndReceivedData, this.BubbleBatteryInfo.Length, this.SensorIdInfo.Length);
+                        Buffer.BlockCopy(beahaviour.ReceivedData, 0, BatteryAndReceivedData,
+                            this.BubbleBatteryInfo.Length + this.SensorIdInfo.Length,
+                            beahaviour.ReceivedData.Length);
+
+
                         Log.Debug(LOG_TAG, $"The battery is : {beahaviour.BatteryInfo.ToString()}, with a length of {beahaviour.BatteryInfo.Length} and " +
                             $"the length of the ReceivedData is {beahaviour.ReceivedData.Length}");
                         eventAggregator.GetEvent<MeasureChangeEventBubble>().Publish(BatteryAndReceivedData);
@@ -570,6 +580,11 @@ namespace HealthAndDrive.Droid.Services
                     break;
 
                 case PacketResponseType.Ignore:
+                    if (beahaviour.SensorIdInfo != null)
+                    {
+                        this.SensorIdInfo = beahaviour.SensorIdInfo;
+                    }
+                    break;
                 default:
                     this.MeasureServiceState = MeasureServiceState.WAITING_DATA;
                     break;
@@ -599,7 +614,7 @@ namespace HealthAndDrive.Droid.Services
 
         public void RefreshWidget()
         {
-            if(lastNotificationMeasure != null)
+            if (lastNotificationMeasure != null)
             {
                 NotificationMeasure cloned = new NotificationMeasure(lastNotificationMeasure);
                 cloned.IsAlert = false;
@@ -778,14 +793,14 @@ namespace HealthAndDrive.Droid.Services
         /// </summary>
         public async void ReconnectBluetooth()
         {
-            
+
             // Show fisrt step 
-            if(Delay == 0)
+            if (Delay == 0)
             {
-                
+
                 Log.Debug(LOG_TAG, "!!!!!!!!------------- In ReconnectionBluetooth Fonction -------------------!!!!!!");
                 this.TestlastNotificationMeasure = new NotificationMeasure();
-                this.TestlastNotificationMeasure.NotificationMeasureDate = new DateTimeOffset(2020,07,29,9,10,0, TimeSpan.Zero); //The date is in UTC time
+                this.TestlastNotificationMeasure.NotificationMeasureDate = new DateTimeOffset(2020, 07, 29, 9, 10, 0, TimeSpan.Zero); //The date is in UTC time
 
                 // Show values
                 Log.Debug(LOG_TAG, $"Last Notification Measure = {this.TestlastNotificationMeasure.NotificationMeasureDate.ToString()} -------------------!!!!!! ");
@@ -803,7 +818,7 @@ namespace HealthAndDrive.Droid.Services
 
 
             }
-            if(Delay == 30 || Delay ==60 || Delay == 90)
+            if (Delay == 30 || Delay == 60 || Delay == 90)
             {
                 Log.Debug(LOG_TAG, "!!!!!!!!------------- In ReconnectionBluetooth Fonction -------------------!!!!!!");
                 this.TestlastNotificationMeasure = new NotificationMeasure();
@@ -825,14 +840,14 @@ namespace HealthAndDrive.Droid.Services
             }
 
             // Check delay
-            if (( Delay >= this.appSettings.RetryBluetoothDelay ) && ( this.MeasureServiceState == MeasureServiceState.WAITING_DATA ))
+            if ((Delay >= this.appSettings.RetryBluetoothDelay) && (this.MeasureServiceState == MeasureServiceState.WAITING_DATA))
             {
-                
+
                 // Re init Delay
                 Delay = 0;
 
                 // Retry connection
-                if( this.lastNotificationMeasure != null )
+                if (this.lastNotificationMeasure != null)
                 {
                     // Check the age of the last measure
                     this.Temp = DateTime.UtcNow - this.lastNotificationMeasure.NotificationMeasureDate;
@@ -870,7 +885,7 @@ namespace HealthAndDrive.Droid.Services
             else
             {
                 Delay++;
-               
+
             }
 
             // Task Delay

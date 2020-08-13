@@ -2,6 +2,8 @@
 using HealthAndDrive.Models;
 using HealthAndDrive.Models.Protocol;
 using HealthAndDrive.Tools;
+using Java.Util;
+using System;
 using System.Collections.Generic;
 
 namespace HealthAndDrive.Protocol
@@ -169,7 +171,7 @@ namespace HealthAndDrive.Protocol
                 Log.Debug(LOG_TAG, $"FreeStyleLibreUtils.RespondToPacket : answer={holder.ResponseType}");
                 return holder;
             }
-            if(deviceType == DeviceType.Bubble)
+            else if(deviceType == DeviceType.Bubble)
             {
                 int first = 0xff & packet[0];
 
@@ -187,11 +189,13 @@ namespace HealthAndDrive.Protocol
                     holder.BatteryInfo = new byte[0];
                     //Value of the Battery level
                     holder.BatteryInfo.SetValue(packet[4],0);
+
                     holder.Response.Add(PacketAnswer);
                     
                 }
                 else if (first == 0xC0)
                 {
+                    holder.SensorIdInfo = Arrays.CopyOfRange(packet, 2, 10);
                     holder.ResponseType = PacketResponseType.Ignore;
                 }
                 else if(first ==0xC1)

@@ -161,11 +161,8 @@ namespace HealthAndDrive.Protocol
 
             ReadingSession.Begin();
 
-            //Battery Info is extracted from the trame
-            ReadingSession.BatteryLevel = packet[0];
-            Log.Debug(LOG_TAG, $"The battery level is {ReadingSession.BatteryLevel}");
-            //We remove the Battery Info from the packet
-            packet.CopyTo(packet, 1);
+            //Battery Info and Sensor id are extracted from the trame
+            packet = ProcessBubbleData(packet);
            
 
             int first = 0xff & packet[0];
@@ -223,10 +220,14 @@ namespace HealthAndDrive.Protocol
 
         }
 
-        /*private void ProcessBubbleData()
+        private byte[] ProcessBubbleData(byte[] packet)
         {
-
-        }*/
+            ReadingSession.BatteryLevel = packet[0];
+            ReadingSession.LibreSN = Utils.ByteArrayToString(Arrays.CopyOfRange(packet, 1, 8));
+            Log.Debug(LOG_TAG, $"The battery level is {ReadingSession.BatteryLevel} and LibreId = {ReadingSession.LibreSN}");
+            //We remove the Battery Info from the packet
+            return Arrays.CopyOfRange(packet, 9,packet.Length-1);
+        }
 
         private void ProcessData()
         {
