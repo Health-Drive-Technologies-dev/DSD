@@ -199,7 +199,7 @@ namespace HealthAndDrive.Droid.Services
             eventAggregator.GetEvent<InitMeasureServiceEvent>().Publish("");
 
             // Init Reconnection Bluetooth process
-            this.ReconnectBluetooth();
+            /*this.ReconnectBluetooth();*/
 
             // Exit event
             eventAggregator.GetEvent<ExitApplicationEvent>().Subscribe(() => { RefreshWidget(); });
@@ -487,10 +487,12 @@ namespace HealthAndDrive.Droid.Services
 
                 // get RX Characteristic and Write values
                 var rxCharacteristic = await this.UARTService.GetCharacteristicAsync(characGuid.Value);
+                Log.Debug(LOG_TAG, "GetCharacteristic");
                 foreach (byte[] value in values)
                 {
                     await rxCharacteristic.WriteAsync(value);
                 }
+                Log.Debug(LOG_TAG, "Characteristic written");
 
                 // the state evolves here
                 this.MeasureServiceState = MeasureServiceState.WAITING_DATA;
@@ -543,18 +545,24 @@ namespace HealthAndDrive.Droid.Services
 
             //Bubble, miaomiao in function of the DeviceTypeConnected connected we have a different response
             DialogBehaviourHolder beahaviour = FreeStyleLibreUtils.RespondToPacketBehaviour(e.Characteristic.Value, this.DeviceTypeConnected);
+            Log.Debug(LOG_TAG, $"beahaviour.Response = {beahaviour.ResponseType} and DeviceTypeConnected = {this.DeviceTypeConnected}" );
 
             switch (beahaviour.ResponseType)
             {
                 case PacketResponseType.Accept:
                     if (this.DeviceTypeConnected == DeviceType.MiaoMiao)
                     {
+                        Log.Debug(LOG_TAG, $"MiaoMiao protocol called");
                         eventAggregator.GetEvent<MeasureChangeEventMiaoMiao>().Publish(beahaviour.ReceivedData);
                     }
                     else
                     {
+                        
+                        Log.Debug(LOG_TAG, $"Bubble protocol called");
+
                         //We concatenate the battery level and SensorId info into the data in order to push to extract the data
-                        byte[] BatteryAndReceivedData = new byte[beahaviour.ReceivedData.Length + beahaviour.BatteryInfo.Length + beahaviour.SensorIdInfo.Length];
+                        byte[] BatteryAndReceivedData = new byte[beahaviour.ReceivedData.Length + this.SensorIdInfo.Length 
+                                                                + this.BubbleBatteryInfo.Length];
                         Buffer.BlockCopy(this.BubbleBatteryInfo, 0, BatteryAndReceivedData, 0, this.BubbleBatteryInfo.Length);
                         Buffer.BlockCopy(this.SensorIdInfo, 0, BatteryAndReceivedData, this.BubbleBatteryInfo.Length, this.SensorIdInfo.Length);
                         Buffer.BlockCopy(beahaviour.ReceivedData, 0, BatteryAndReceivedData,
@@ -562,8 +570,10 @@ namespace HealthAndDrive.Droid.Services
                             beahaviour.ReceivedData.Length);
 
 
-                        Log.Debug(LOG_TAG, $"The battery is : {beahaviour.BatteryInfo.ToString()}, with a length of {beahaviour.BatteryInfo.Length} and " +
-                            $"the length of the ReceivedData is {beahaviour.ReceivedData.Length}");
+                        Log.Debug(LOG_TAG, $"The battery is : {Utils.ByteArrayToString(this.BubbleBatteryInfo)}, " +
+                            $"with a length of {this.BubbleBatteryInfo.Length} and " +
+                            $"the length of the ReceivedData is {beahaviour.ReceivedData.Length}," +
+                            $"{Utils.ByteArrayToString(this.SensorIdInfo)} with a length of {this.SensorIdInfo.Length}");
                         eventAggregator.GetEvent<MeasureChangeEventBubble>().Publish(BatteryAndReceivedData);
                     }
                     this.MeasureServiceState = MeasureServiceState.RECEIVING_DATA;

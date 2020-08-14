@@ -141,7 +141,7 @@ namespace HealthAndDrive.Protocol
                 Append("ReadingStart=[" + this.ReadingStart + "], ")
                 .Append("ReadingEnd=[" + this.ReadingEnd + "], ")
                 .Append("ReadingEnd=[" + this.ReadingEnd + "], ")
-                .Append("HardwareName=[" + this.SensorId + "], ")
+                .Append("SensorId=[" + this.SensorId + "], ")
                 .Append("FirmwareVersion[" + this.FirmwareVersion + "], ")
                 .Append("BatteryLevel=[" + this.BatteryLevel + "], ")
                 .Append("LibreSN=[" + this.LibreSN + "], ")

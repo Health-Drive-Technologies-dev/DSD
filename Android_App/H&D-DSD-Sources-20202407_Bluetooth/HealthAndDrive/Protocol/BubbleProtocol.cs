@@ -163,10 +163,11 @@ namespace HealthAndDrive.Protocol
 
             //Battery Info and Sensor id are extracted from the trame
             packet = ProcessBubbleData(packet);
+            Log.Debug(LOG_TAG, $"Packet length = {packet.Length}");
            
 
             int first = 0xff & packet[0];
-            Log.Debug(LOG_TAG, $"The first element is {first}");
+            
 
             if (first == 0x80)
             {
@@ -190,7 +191,8 @@ namespace HealthAndDrive.Protocol
             }
             if (first == 0x82)
             {
-                switch(State)
+                Log.Debug(LOG_TAG, "Data accepted code : 0x82");
+                switch (State)
                 {
                     case Models.Enums.ProtocolState.WAITING_DATA_CHANGE:
                     case Models.Enums.ProtocolState.REQUEST_DATA_SENT:
@@ -223,10 +225,13 @@ namespace HealthAndDrive.Protocol
         private byte[] ProcessBubbleData(byte[] packet)
         {
             ReadingSession.BatteryLevel = packet[0];
-            ReadingSession.LibreSN = Utils.ByteArrayToString(Arrays.CopyOfRange(packet, 1, 8));
-            Log.Debug(LOG_TAG, $"The battery level is {ReadingSession.BatteryLevel} and LibreId = {ReadingSession.LibreSN}");
+            ReadingSession.SensorId = Utils.ByteArrayToString(Arrays.CopyOfRange(packet, 1, 8));
+            Log.Debug(LOG_TAG, $"The battery level is {ReadingSession.BatteryLevel} and LibreId = {ReadingSession.SensorId}");
             //We remove the Battery Info from the packet
-            return Arrays.CopyOfRange(packet, 9,packet.Length-1);
+            byte[] dataToProcess = Arrays.CopyOfRange(packet, 9,packet.Length);
+            Log.Debug(LOG_TAG, $"Data to process length = {dataToProcess.Length}");
+            return dataToProcess;
+            
         }
 
         private void ProcessData()
@@ -284,6 +289,7 @@ namespace HealthAndDrive.Protocol
                 measure.GlucoseLevelMMOL = (float)FreeStyleLibreUtils.ConvertMGDLToMMolPerLiter(this.settings, Math.Round((double)measure.GlucoseLevelRaw / 10));
                 ReadingSession.PushHistoryMeasure(measure);
             }
+            Log.Debug(LOG_TAG, "Historical Data processed and Added");
 
             // loads trend values (ring buffer, starting at index_trent. byte 28-123)
             for (int index = 0; index < 16; index++)

@@ -171,7 +171,7 @@ namespace HealthAndDrive.Protocol
                 Log.Debug(LOG_TAG, $"FreeStyleLibreUtils.RespondToPacket : answer={holder.ResponseType}");
                 return holder;
             }
-            else if(deviceType == DeviceType.Bubble)
+            if(deviceType == DeviceType.Bubble)
             {
                 int first = 0xff & packet[0];
 
@@ -186,17 +186,18 @@ namespace HealthAndDrive.Protocol
                     PacketAnswer[3] = 0x00;
                     PacketAnswer[4] = 0x00;
                     PacketAnswer[5] = 0x2B;
-                    holder.BatteryInfo = new byte[0];
+                    holder.BatteryInfo = new byte[1];
                     //Value of the Battery level
                     holder.BatteryInfo.SetValue(packet[4],0);
-
                     holder.Response.Add(PacketAnswer);
                     
                 }
                 else if (first == 0xC0)
                 {
+                    holder.SensorIdInfo = new byte[8];
                     holder.SensorIdInfo = Arrays.CopyOfRange(packet, 2, 10);
                     holder.ResponseType = PacketResponseType.Ignore;
+                    Log.Debug(LOG_TAG, $"SensorIdInfo length = {holder.SensorIdInfo.Length}");
                 }
                 else if(first ==0xC1)
                 {
@@ -211,6 +212,7 @@ namespace HealthAndDrive.Protocol
                 // The data received is accepted. We will process it
                 else if(first == 0x82)
                 {
+                    
                     holder.ResponseType = PacketResponseType.Accept;
                 }
                 else
