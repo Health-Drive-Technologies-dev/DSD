@@ -570,9 +570,9 @@ namespace HealthAndDrive.Droid.Services
                             beahaviour.ReceivedData.Length);
 
 
-                        Log.Debug(LOG_TAG, $"The battery is : {Utils.ByteArrayToString(this.BubbleBatteryInfo)}, " +
+                        Log.Debug(LOG_TAG, $"The battery is : {this.BubbleBatteryInfo[0]}, " +
                             $"with a length of {this.BubbleBatteryInfo.Length} and " +
-                            $"the length of the ReceivedData is {beahaviour.ReceivedData.Length}," +
+                            $"the length of the ReceivedData is {beahaviour.ReceivedData.Length}, " +
                             $"{Utils.ByteArrayToString(this.SensorIdInfo)} with a length of {this.SensorIdInfo.Length}");
                         eventAggregator.GetEvent<MeasureChangeEventBubble>().Publish(BatteryAndReceivedData);
                     }
