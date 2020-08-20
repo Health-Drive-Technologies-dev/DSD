@@ -79,6 +79,11 @@ namespace HealthAndDrive.Tools
         public int MEASURE_SERVICE_RETRY_DEFAULT_TIME = 1;
 
         /// <summary>
+        /// Glucose Measure Service retry default time in minutes when no device is connected to the app
+        /// </summary>
+        public int MEASURE_SERVICE_RETRY_DEFAULT_TIME_DISCONNECTED = 10;
+
+        /// <summary>
         /// The maximum of the maximum glucose value
         /// </summary>
         public int ALERTS_MAX_OF_MAX_GLUCOSE_VALUE = 220;
@@ -182,7 +187,7 @@ namespace HealthAndDrive.Tools
         /// <summary>
         /// Retry Delay in second
         /// </summary>
-        public int RetryBluetoothDelay = 300;
+        public double RetryBluetoothDelay = 60;
 
 
         

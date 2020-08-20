@@ -199,7 +199,7 @@ namespace HealthAndDrive.Droid.Services
             eventAggregator.GetEvent<InitMeasureServiceEvent>().Publish("");
 
             // Init Reconnection Bluetooth process
-            /*this.ReconnectBluetooth();*/
+            this.ReconnectBluetooth();
 
             // Exit event
             eventAggregator.GetEvent<ExitApplicationEvent>().Subscribe(() => { RefreshWidget(); });
@@ -545,7 +545,7 @@ namespace HealthAndDrive.Droid.Services
 
             //Bubble, miaomiao in function of the DeviceTypeConnected connected we have a different response
             DialogBehaviourHolder beahaviour = FreeStyleLibreUtils.RespondToPacketBehaviour(e.Characteristic.Value, this.DeviceTypeConnected);
-            Log.Debug(LOG_TAG, $"beahaviour.Response = {beahaviour.ResponseType} and DeviceTypeConnected = {this.DeviceTypeConnected}" );
+            Log.Debug(LOG_TAG, $"beahaviour.Response = {beahaviour.ResponseType} and DeviceTypeConnected = {this.DeviceTypeConnected}");
 
             switch (beahaviour.ResponseType)
             {
@@ -557,11 +557,11 @@ namespace HealthAndDrive.Droid.Services
                     }
                     else
                     {
-                        
+
                         Log.Debug(LOG_TAG, $"Bubble protocol called");
 
                         //We concatenate the battery level and SensorId info into the data in order to push to extract the data
-                        byte[] BatteryAndReceivedData = new byte[beahaviour.ReceivedData.Length + this.SensorIdInfo.Length 
+                        byte[] BatteryAndReceivedData = new byte[beahaviour.ReceivedData.Length + this.SensorIdInfo.Length
                                                                 + this.BubbleBatteryInfo.Length];
                         Buffer.BlockCopy(this.BubbleBatteryInfo, 0, BatteryAndReceivedData, 0, this.BubbleBatteryInfo.Length);
                         Buffer.BlockCopy(this.SensorIdInfo, 0, BatteryAndReceivedData, this.BubbleBatteryInfo.Length, this.SensorIdInfo.Length);
@@ -807,80 +807,56 @@ namespace HealthAndDrive.Droid.Services
             // Show fisrt step 
             if (Delay == 0)
             {
+                Log.Debug(LOG_TAG, "!!!!!!!!------------- In ReconnectionBluetooth Function -------------------!!!!!!");
+                /*this.TestlastNotificationMeasure = new NotificationMeasure();
+                this.TestlastNotificationMeasure.NotificationMeasureDate = new DateTimeOffset(2020, 07, 29, 9, 10, 0, TimeSpan.Zero); //The date is in UTC time*/
+                if (this.lastNotificationMeasure != null)
+                {
+                    // Show values
+                    Log.Debug(LOG_TAG, $"Last Notification Measure = {this.lastNotificationMeasure.NotificationMeasureDate.ToString("G")} -------------------!!!!!! ");
 
-                Log.Debug(LOG_TAG, "!!!!!!!!------------- In ReconnectionBluetooth Fonction -------------------!!!!!!");
-                this.TestlastNotificationMeasure = new NotificationMeasure();
-                this.TestlastNotificationMeasure.NotificationMeasureDate = new DateTimeOffset(2020, 07, 29, 9, 10, 0, TimeSpan.Zero); //The date is in UTC time
+                    Log.Debug(LOG_TAG, $"Now time = {DateTime.Now} -------------------!!!!!! ");
 
-                // Show values
-                Log.Debug(LOG_TAG, $"Last Notification Measure = {this.TestlastNotificationMeasure.NotificationMeasureDate.ToString()} -------------------!!!!!! ");
-
-                Log.Debug(LOG_TAG, $"Now time = {DateTime.UtcNow} -------------------!!!!!! ");
-
-                // Check the age of the last measure
-                Temp = DateTime.UtcNow - TestlastNotificationMeasure.NotificationMeasureDate;
-                Log.Debug(LOG_TAG, $"Age = {Temp} -------------------!!!!!! ");
-
-
-                gapTimeInSeconde = Temp.TotalSeconds;
-
-                Log.Debug(LOG_TAG, $"!!!!!!!!------------- Gap Time in seconds(s) = {gapTimeInSeconde} -------------------!!!!!! ");
+                    // Check the age of the last measure
+                    Temp = DateTime.Now - this.lastNotificationMeasure.NotificationMeasureDate;
+                    Log.Debug(LOG_TAG, $"Age = {Temp} -------------------!!!!!! ");
 
 
-            }
-            if (Delay == 30 || Delay == 60 || Delay == 90)
-            {
-                Log.Debug(LOG_TAG, "!!!!!!!!------------- In ReconnectionBluetooth Fonction -------------------!!!!!!");
-                this.TestlastNotificationMeasure = new NotificationMeasure();
-                this.TestlastNotificationMeasure.NotificationMeasureDate = new DateTimeOffset(2020, 07, 29, 9, 10, 0, TimeSpan.Zero);
+                    gapTimeInSeconde = Temp.TotalSeconds;
 
-                // Show values
-                Log.Debug(LOG_TAG, $"Last Notification Measure = {this.TestlastNotificationMeasure.NotificationMeasureDate.ToString()} -------------------!!!!!! ");
+                    Log.Debug(LOG_TAG, $"!!!!!!!!------------- Gap Time in seconds(s) = {gapTimeInSeconde} -------------------!!!!!! ");
 
-                Log.Debug(LOG_TAG, $"Now time = {DateTime.UtcNow} -------------------!!!!!! ");
-
-                // Check the age of the last measure
-                Temp = DateTime.UtcNow - TestlastNotificationMeasure.NotificationMeasureDate;
-                Log.Debug(LOG_TAG, $"Age = {Temp} -------------------!!!!!! ");
-
-
-                gapTimeInSeconde = Temp.TotalSeconds;
-
-                Log.Debug(LOG_TAG, $"!!!!!!!!------------- Gap Time in seconds(s) = {gapTimeInSeconde} -------------------!!!!!! ");
+                }
+                Log.Debug(LOG_TAG, "!!!!!!!!------------- Delay = 0  -------------------!!!!!!");
             }
 
             // Check delay
             if ((Delay >= this.appSettings.RetryBluetoothDelay) && (this.MeasureServiceState == MeasureServiceState.WAITING_DATA))
             {
 
-                // Re init Delay
-                Delay = 0;
-
                 // Retry connection
                 if (this.lastNotificationMeasure != null)
                 {
                     // Check the age of the last measure
-                    this.Temp = DateTime.UtcNow - this.lastNotificationMeasure.NotificationMeasureDate;
+                    this.Temp = DateTime.Now - this.lastNotificationMeasure.NotificationMeasureDate;
 
-                    Log.Debug(LOG_TAG, $"!!!!!!!!------------- The last Measure Date is {this.lastNotificationMeasure.NotificationMeasureDate.ToString()} -------------------!!!!!! ");
+                    Log.Debug(LOG_TAG, $"!!!!!!!!------------- The last Measure Date is {this.lastNotificationMeasure.NotificationMeasureDate.ToString("G")} -------------------!!!!!! ");
                     this.gapTimeInSeconde = this.Temp.TotalSeconds;
-
-                    Log.Debug(LOG_TAG, $"!!!!!!!!------------- Gap Time in seconds(s) between {nameof(DateTimeOffset.UtcNow)} and Last Measure Date = {this.gapTimeInSeconde} -------------------!!!!!! ");
+                    double RetryDelay = this.appSettings.RetryBluetoothDelay;
+                    Log.Debug(LOG_TAG, $"!!!!!!!!------------- Gap Time in seconds(s) between {nameof(DateTimeOffset.Now)} and Last Measure Date = {this.gapTimeInSeconde} -------------------!!!!!! ");
 
                     // Check the age of the last measure
                     // if most than 15 minutes reconnect the last device
-                    if (this.gapTimeInSeconde >= this.appSettings.RetryBluetoothDelay)
+                    if (this.gapTimeInSeconde >= RetryDelay)
                     {
+                        Log.Debug(LOG_TAG, "!!!!!!!!!!!!!!!--------Bluetooth Reconnection asked ------------------!!!!");
                         // Publish event Reconnection Bluetooth
                         this.eventAggregator.GetEvent<ReconnectBluetoothEvent>().Publish("");
-
                         // For debug
                         Log.Debug(LOG_TAG, "!!!!!!!!------------- Event Reconnection Bluetooth published  -------------------!!!!!!");
-
-
                     }
-
-
+                    // Re init Delay
+                    Delay = 0;
                 }
                 else // Notification null until 15 minutes problem !!! 
                 {
@@ -897,10 +873,14 @@ namespace HealthAndDrive.Droid.Services
                 Delay++;
 
             }
+            // Task Delay when a device is connected
+            await Task.Delay(this.appSettings.MEASURE_SERVICE_RETRY_DEFAULT_TIME * 1000).ContinueWith(t => this.ReconnectBluetooth());
 
-            // Task Delay
-            await Task.Delay(this.appSettings.MEASURE_SERVICE_RETRY_DEFAULT_TIME * 1000).ContinueWith(t => ReconnectBluetooth());
+
+
+
 
         }
     }
+
 }
