@@ -86,11 +86,13 @@ namespace HealthAndDrive.Services
             });
 
             // Subscribe to the ReconnectionBluetoothEvent
-            this.eventAggregator.GetEvent<ReconnectBluetoothEvent>().Subscribe(async (value) =>
+            this.eventAggregator.GetEvent<ReconnectBLEEvent>().Subscribe(async (value) =>
             {
                 /*Analytics.TrackEvent(AnalyticsEvent.BluetoothReconnectionActivated);*/
                 // awake device
-                await WakeUpMeasureServiceAsync();
+                //Xamarin.Forms.Device.BeginInvokeOnMainThread(() => { //To be tested !
+                   await WakeUpMeasureServiceAsync(); 
+                //});
             });
 
             // subscription to the LastMeasureReceivedEvent
@@ -349,6 +351,7 @@ namespace HealthAndDrive.Services
             this.eventAggregator.GetEvent<TrendEvent>().Publish(notification.MeasureTrend);
             //Send the measure trend event to the notification
             this.eventAggregator.GetEvent<NotificationMeasureEvent>().Publish(notification);
+            Log.Debug(LOG_TAG, $"Notification measure = {notification.NewMeasure}");
 
             // 3 - Alerts raised to the user ? 
             if (userRepository.GetCurrentUser().IsAlert)
@@ -397,7 +400,9 @@ namespace HealthAndDrive.Services
             Log.Debug(LOG_TAG, GetType() + ".WakeUpMeasureServiceAsync: called");
 
             bool needToPostDelayExecution = false;
-
+            /*if (this.userRepository != null)
+            { 
+            }*/
             User currentUser = this.userRepository.GetCurrentUser();
             if (!currentUser.DeviceIsBounded)
             {

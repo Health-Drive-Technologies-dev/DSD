@@ -198,6 +198,7 @@ namespace HealthAndDrive.Droid.Services
             eventAggregator.GetEvent<EndReadingEvent>().Subscribe((value) => { this.MeasureServiceState = MeasureServiceState.WAITING_DATA; });
             eventAggregator.GetEvent<InitMeasureServiceEvent>().Publish("");
 
+           
             // Init Reconnection Bluetooth process
             this.ReconnectBluetooth();
 
@@ -803,7 +804,6 @@ namespace HealthAndDrive.Droid.Services
         /// </summary>
         public async void ReconnectBluetooth()
         {
-
             // Show fisrt step 
             if (Delay == 0)
             {
@@ -849,37 +849,49 @@ namespace HealthAndDrive.Droid.Services
                     // if most than 15 minutes reconnect the last device
                     if (this.gapTimeInSeconde >= RetryDelay)
                     {
+                        if (this.eventAggregator == null)
+                            eventAggregator = (IEventAggregator)App.Current.Container.Resolve(typeof(IEventAggregator));
                         Log.Debug(LOG_TAG, "!!!!!!!!!!!!!!!--------Bluetooth Reconnection asked ------------------!!!!");
                         // Publish event Reconnection Bluetooth
-                        this.eventAggregator.GetEvent<ReconnectBluetoothEvent>().Publish("");
+                        /* this.eventAggregator.GetEvent<ReconnectBLEEvent>().Publish("");*/
+                        eventAggregator.GetEvent<ReconnectBLEEvent>().Publish("");
                         // For debug
                         Log.Debug(LOG_TAG, "!!!!!!!!------------- Event Reconnection Bluetooth published  -------------------!!!!!!");
+                        // Re init Delay
+                        this.Delay = 0;
                     }
-                    // Re init Delay
-                    Delay = 0;
+
                 }
                 else // Notification null until 15 minutes problem !!! 
                 {
+                    if (this.eventAggregator == null)
+                        eventAggregator = (IEventAggregator)App.Current.Container.Resolve(typeof(IEventAggregator));
                     // reconnection
-                    this.eventAggregator.GetEvent<ReconnectBluetoothEvent>().Publish("");
+                    eventAggregator.GetEvent<ReconnectBLEEvent>().Publish("");
 
                     // For debug
                     Log.Debug(LOG_TAG, "!!!!!!!!------------- Event Reconnection Bluetooth published  -------------------!!!!!!");
+                    this.Delay = 0;
 
                 }
+            }
+            if ((Delay >= this.appSettings.RetryBluetoothDelay) && (this.MeasureServiceState == MeasureServiceState.OFF))
+            {
+                if (this.eventAggregator == null)
+                    eventAggregator = (IEventAggregator)App.Current.Container.Resolve(typeof(IEventAggregator));
+                eventAggregator.GetEvent<ReconnectBLEEvent>().Publish("");
+
+                // For debug
+                Log.Debug(LOG_TAG, "!!!!!!!!------------- Event Reconnection Bluetooth published  -------------------!!!!!!");
+                this.Delay = 0;
             }
             else
             {
                 Delay++;
-
             }
+
             // Task Delay when a device is connected
             await Task.Delay(this.appSettings.MEASURE_SERVICE_RETRY_DEFAULT_TIME * 1000).ContinueWith(t => this.ReconnectBluetooth());
-
-
-
-
-
         }
     }
 
