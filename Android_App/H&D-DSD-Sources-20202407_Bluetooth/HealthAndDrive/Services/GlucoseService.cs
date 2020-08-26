@@ -56,6 +56,11 @@ namespace HealthAndDrive.Services
         /// </summary>
         private IMeasure measureService;
 
+        /// <summary>
+        /// If the method WakeUpMeasureServiceAsync() is already calling, the bool is true
+        /// </summary>
+        public bool IsWakingUpDevice { get; set; }
+
         private float? precedingMeasure { get; set; } = null;
 
         /// <summary>
@@ -72,6 +77,7 @@ namespace HealthAndDrive.Services
             this.sensorRepository = sensorRepository;
             this.glucoseMeasureRepository = GlucoseMeasureRepository;
             this.appSettings = settings;
+            this.IsWakingUpDevice = false;
 
             // subscription to the init measureServiceEvent
             // This event is possibly raised by the background service after its full initialization
@@ -83,16 +89,21 @@ namespace HealthAndDrive.Services
 
                 // then we awake the device
                 await WakeUpMeasureServiceAsync();
+                
             });
 
             // Subscribe to the ReconnectionBluetoothEvent
-            this.eventAggregator.GetEvent<ReconnectBLEEvent>().Subscribe(async (value) =>
+            this.eventAggregator.GetEvent<ReconnectBLEEvent>().Subscribe((value) =>
             {
                 /*Analytics.TrackEvent(AnalyticsEvent.BluetoothReconnectionActivated);*/
+                if(this.IsWakingUpDevice != true)
+                {
+                    Xamarin.Forms.Device.BeginInvokeOnMainThread(() => { //To be tested !
+                        WakeUpMeasureServiceAsync();
+                    });
+                }
                 // awake device
-                //Xamarin.Forms.Device.BeginInvokeOnMainThread(() => { //To be tested !
-                   await WakeUpMeasureServiceAsync(); 
-                //});
+                
             });
 
             // subscription to the LastMeasureReceivedEvent
@@ -397,6 +408,7 @@ namespace HealthAndDrive.Services
         /// <returns></returns>
         private async Task WakeUpMeasureServiceAsync()
         {
+            this.IsWakingUpDevice = true;
             Log.Debug(LOG_TAG, GetType() + ".WakeUpMeasureServiceAsync: called");
 
             bool needToPostDelayExecution = false;
@@ -407,6 +419,7 @@ namespace HealthAndDrive.Services
             if (!currentUser.DeviceIsBounded)
             {
                 Log.Debug(LOG_TAG, GetType() + ".WakeUpMeasureServiceAsync: no device bounded. No need to awake the mesure service");
+                this.IsWakingUpDevice = false;
                 return;
             }
 
@@ -481,6 +494,7 @@ namespace HealthAndDrive.Services
                        Xamarin.Forms.Device.BeginInvokeOnMainThread(() => { WakeUpMeasureServiceAsync(); })
                         );
                 }
+                this.IsWakingUpDevice = false;
             }
         }
 

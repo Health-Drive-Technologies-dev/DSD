@@ -87,6 +87,11 @@ namespace HealthAndDrive.Droid.Services
         private IDevice ConnectedDevice { get; set; }
 
         /// <summary>
+        /// The connected device with Device type
+        /// </summary>
+        private Device MyConnectedDevice { get; set; }
+
+        /// <summary>
         /// The Service used to "talk" to our device
         /// </summary>
         IService UARTService { get; set; }
@@ -198,9 +203,6 @@ namespace HealthAndDrive.Droid.Services
             eventAggregator.GetEvent<EndReadingEvent>().Subscribe((value) => { this.MeasureServiceState = MeasureServiceState.WAITING_DATA; });
             eventAggregator.GetEvent<InitMeasureServiceEvent>().Publish("");
 
-           
-            // Init Reconnection Bluetooth process
-            this.ReconnectBluetooth();
 
             // Exit event
             eventAggregator.GetEvent<ExitApplicationEvent>().Subscribe(() => { RefreshWidget(); });
@@ -342,6 +344,7 @@ namespace HealthAndDrive.Droid.Services
                 }
 
                 Log.Debug(LOG_TAG, "RegisterDeviceAsync: Connection successfull");
+
                 return true;
             }
             catch (DeviceConnectionException e)
@@ -404,7 +407,10 @@ namespace HealthAndDrive.Droid.Services
                     return false;
                 }
                 this.DeviceTypeConnected = device.DeviceType;
+                this.MyConnectedDevice = new Device(device.Id, device.Name);
                 Log.Debug(LOG_TAG, $"InitializeBLEServicesAsync: Service connection successfull for {this.DeviceTypeConnected} device");
+
+
                 return true;
             }
             catch (Exception e)
@@ -497,6 +503,8 @@ namespace HealthAndDrive.Droid.Services
 
                 // the state evolves here
                 this.MeasureServiceState = MeasureServiceState.WAITING_DATA;
+                // Init Reconnection Bluetooth process
+                this.ReconnectBluetooth();
 
                 return true;
             }
@@ -617,6 +625,12 @@ namespace HealthAndDrive.Droid.Services
             if (this.Adapter != null && this.ConnectedDevice != null)
             {
                 this.Adapter.DisconnectDeviceAsync(this.ConnectedDevice);
+                this.DeviceTypeConnected = new DeviceType();
+                this.BubbleBatteryInfo = null;
+            }
+            if (this.MyConnectedDevice != null)
+            {
+                this.MyConnectedDevice = new Device();
                 this.DeviceTypeConnected = new DeviceType();
                 this.BubbleBatteryInfo = null;
             }
@@ -804,6 +818,7 @@ namespace HealthAndDrive.Droid.Services
         /// </summary>
         public async void ReconnectBluetooth()
         {
+
             // Show fisrt step 
             if (Delay == 0)
             {
@@ -849,6 +864,11 @@ namespace HealthAndDrive.Droid.Services
                     // if most than 15 minutes reconnect the last device
                     if (this.gapTimeInSeconde >= RetryDelay)
                     {
+                        if (this.MyConnectedDevice != null)
+                        {
+                            await Task.Run(() => { UnregisterDevice(this.MyConnectedDevice); });
+                        }
+
                         if (this.eventAggregator == null)
                             eventAggregator = (IEventAggregator)App.Current.Container.Resolve(typeof(IEventAggregator));
                         Log.Debug(LOG_TAG, "!!!!!!!!!!!!!!!--------Bluetooth Reconnection asked ------------------!!!!");
@@ -859,11 +879,16 @@ namespace HealthAndDrive.Droid.Services
                         Log.Debug(LOG_TAG, "!!!!!!!!------------- Event Reconnection Bluetooth published  -------------------!!!!!!");
                         // Re init Delay
                         this.Delay = 0;
+
                     }
 
                 }
                 else // Notification null until 15 minutes problem !!! 
                 {
+                    if (this.MyConnectedDevice != null)
+                    {
+                        await Task.Run(() => { UnregisterDevice(this.MyConnectedDevice); });
+                    }
                     if (this.eventAggregator == null)
                         eventAggregator = (IEventAggregator)App.Current.Container.Resolve(typeof(IEventAggregator));
                     // reconnection
@@ -877,6 +902,10 @@ namespace HealthAndDrive.Droid.Services
             }
             if ((Delay >= this.appSettings.RetryBluetoothDelay) && (this.MeasureServiceState == MeasureServiceState.OFF))
             {
+                if (this.MyConnectedDevice != null)
+                {
+                    await Task.Run(() => { UnregisterDevice(this.MyConnectedDevice); });
+                }
                 if (this.eventAggregator == null)
                     eventAggregator = (IEventAggregator)App.Current.Container.Resolve(typeof(IEventAggregator));
                 eventAggregator.GetEvent<ReconnectBLEEvent>().Publish("");
