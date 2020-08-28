@@ -203,6 +203,8 @@ namespace HealthAndDrive.Droid.Services
             eventAggregator.GetEvent<EndReadingEvent>().Subscribe((value) => { this.MeasureServiceState = MeasureServiceState.WAITING_DATA; });
             eventAggregator.GetEvent<InitMeasureServiceEvent>().Publish("");
 
+            // Init Reconnection Bluetooth process
+            this.ReconnectBluetooth();
 
             // Exit event
             eventAggregator.GetEvent<ExitApplicationEvent>().Subscribe(() => { RefreshWidget(); });
@@ -503,8 +505,7 @@ namespace HealthAndDrive.Droid.Services
 
                 // the state evolves here
                 this.MeasureServiceState = MeasureServiceState.WAITING_DATA;
-                // Init Reconnection Bluetooth process
-                this.ReconnectBluetooth();
+               
 
                 return true;
             }
@@ -626,13 +627,14 @@ namespace HealthAndDrive.Droid.Services
             {
                 this.Adapter.DisconnectDeviceAsync(this.ConnectedDevice);
                 this.DeviceTypeConnected = new DeviceType();
-                this.BubbleBatteryInfo = null;
+                this.BubbleBatteryInfo = new byte[1];
+                
             }
             if (this.MyConnectedDevice != null)
             {
                 this.MyConnectedDevice = new Device();
                 this.DeviceTypeConnected = new DeviceType();
-                this.BubbleBatteryInfo = null;
+                this.BubbleBatteryInfo = new byte[1];
             }
 
         }
