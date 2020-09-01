@@ -56,7 +56,7 @@ namespace HealthAndDrive.Tools
         /// <summary>
         /// TDE
         /// </summary>
-        public string TDE = "1048198951";
+        //public string TDE = "1048198951";
 
         /// <summary>
         /// HELP URL 

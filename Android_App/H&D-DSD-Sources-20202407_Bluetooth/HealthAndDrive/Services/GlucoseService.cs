@@ -127,10 +127,10 @@ namespace HealthAndDrive.Services
         {
             Log.Debug(LOG_TAG, GetType() + ".ReportReadingSession:" + readingSession.ToString());
 
-            if (!Utils.IsValidTDE(this.appSettings.TDE))
+            /*if (!Utils.IsValidTDE(this.appSettings.TDE))
             {
                 return;
-            }
+            }*/
 
             Xamarin.Forms.Device.BeginInvokeOnMainThread(() =>
             {

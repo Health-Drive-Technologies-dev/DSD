@@ -66,14 +66,14 @@ namespace HealthAndDrive.Tools
         /// </summary>
         /// <param name="s">The timestamp value (the string is reverted)</param>
         /// <returns></returns>
-        public static bool IsValidTDE(string s)
+        /*public static bool IsValidTDE(string s)
         {
             char[] charArray = s.ToCharArray();
             Array.Reverse(charArray);
             var reverted = new string(charArray);
 
             return DateTimeOffset.FromUnixTimeSeconds(long.Parse(reverted)) > DateTimeOffset.UtcNow;
-        }
+        }*/
 
         /// <summary>
         /// Converts a byte array to its string representation

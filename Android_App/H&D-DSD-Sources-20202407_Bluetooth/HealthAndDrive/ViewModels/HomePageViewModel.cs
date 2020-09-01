@@ -136,11 +136,11 @@ namespace HealthAndDrive.ViewModels
                 await this.NavigationService.NavigateAsync("/RootPage/PrismNavigationPage/MainTabbedPage?selectedTab=AlertsPage");
             });
 
-            if (!Utils.IsValidTDE(settings.TDE))
+            /*if (!Utils.IsValidTDE(settings.TDE))
             {
                 var closer = DependencyService.Get<ICloseApplication>();
                 closer?.closeApplication();
-            }
+            }*/
 
             IsAlert = this.userRepository.GetCurrentUser().IsAlert; 
             IsWidgetEnable = this.userRepository.GetCurrentUser().IsWidgetEnable;
