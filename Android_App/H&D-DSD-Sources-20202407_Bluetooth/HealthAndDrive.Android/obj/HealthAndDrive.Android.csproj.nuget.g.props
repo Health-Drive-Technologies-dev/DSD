@@ -4,17 +4,17 @@
     <RestoreSuccess Condition=" '$(RestoreSuccess)' == '' ">True</RestoreSuccess>
     <RestoreTool Condition=" '$(RestoreTool)' == '' ">NuGet</RestoreTool>
     <ProjectAssetsFile Condition=" '$(ProjectAssetsFile)' == '' ">$(MSBuildThisFileDirectory)project.assets.json</ProjectAssetsFile>
-    <NuGetPackageRoot Condition=" '$(NuGetPackageRoot)' == '' ">/Users/bahamadououry/.nuget/packages/</NuGetPackageRoot>
-    <NuGetPackageFolders Condition=" '$(NuGetPackageFolders)' == '' ">/Users/bahamadououry/.nuget/packages/</NuGetPackageFolders>
+    <NuGetPackageRoot Condition=" '$(NuGetPackageRoot)' == '' ">$(UserProfile)\.nuget\packages\</NuGetPackageRoot>
+    <NuGetPackageFolders Condition=" '$(NuGetPackageFolders)' == '' ">C:\Users\oudar\.nuget\packages\;C:\Microsoft\Xamarin\NuGet\</NuGetPackageFolders>
     <NuGetProjectStyle Condition=" '$(NuGetProjectStyle)' == '' ">PackageReference</NuGetProjectStyle>
-    <NuGetToolVersion Condition=" '$(NuGetToolVersion)' == '' ">5.6.0</NuGetToolVersion>
+    <NuGetToolVersion Condition=" '$(NuGetToolVersion)' == '' ">5.4.0</NuGetToolVersion>
   </PropertyGroup>
   <PropertyGroup>
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
   </PropertyGroup>
   <ImportGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
-    <Import Project="$(NuGetPackageRoot)xamarin.forms/4.3.0.991211/build/Xamarin.Forms.props" Condition="Exists('$(NuGetPackageRoot)xamarin.forms/4.3.0.991211/build/Xamarin.Forms.props')" />
-    <Import Project="$(NuGetPackageRoot)realm.fody/4.3.0/build/Realm.Fody.props" Condition="Exists('$(NuGetPackageRoot)realm.fody/4.3.0/build/Realm.Fody.props')" />
-    <Import Project="$(NuGetPackageRoot)realm/4.3.0/build/Realm.props" Condition="Exists('$(NuGetPackageRoot)realm/4.3.0/build/Realm.props')" />
+    <Import Project="$(NuGetPackageRoot)xamarin.forms\4.3.0.991211\build\Xamarin.Forms.props" Condition="Exists('$(NuGetPackageRoot)xamarin.forms\4.3.0.991211\build\Xamarin.Forms.props')" />
+    <Import Project="$(NuGetPackageRoot)realm.fody\4.3.0\build\Realm.Fody.props" Condition="Exists('$(NuGetPackageRoot)realm.fody\4.3.0\build\Realm.Fody.props')" />
+    <Import Project="$(NuGetPackageRoot)realm\4.3.0\build\Realm.props" Condition="Exists('$(NuGetPackageRoot)realm\4.3.0\build\Realm.props')" />
   </ImportGroup>
 </Project>

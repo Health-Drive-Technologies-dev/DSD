@@ -5517,30 +5517,34 @@
     ]
   },
   "packageFolders": {
-    "/Users/bahamadououry/.nuget/packages/": {},
-    "/usr/local/share/dotnet/sdk/NuGetFallbackFolder": {}
+    "C:\\Users\\oudar\\.nuget\\packages\\": {},
+    "C:\\Microsoft\\Xamarin\\NuGet\\": {},
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/bahamadououry/Desktop/Health_Drive/GitHub/Health-Drive-Technoligies/Android_App/H&D-DSD-Sources-20202407_Bluetooth/HealthAndDrive/HealthAndDrive.csproj",
+      "projectUniqueName": "D:\\DSD\\Android_App\\H&D-DSD-Sources-20202407_Bluetooth\\HealthAndDrive\\HealthAndDrive.csproj",
       "projectName": "HealthAndDrive",
-      "projectPath": "/Users/bahamadououry/Desktop/Health_Drive/GitHub/Health-Drive-Technoligies/Android_App/H&D-DSD-Sources-20202407_Bluetooth/HealthAndDrive/HealthAndDrive.csproj",
-      "packagesPath": "/Users/bahamadououry/.nuget/packages/",
-      "outputPath": "/Users/bahamadououry/Desktop/Health_Drive/GitHub/Health-Drive-Technoligies/Android_App/H&D-DSD-Sources-20202407_Bluetooth/HealthAndDrive/obj/",
+      "projectPath": "D:\\DSD\\Android_App\\H&D-DSD-Sources-20202407_Bluetooth\\HealthAndDrive\\HealthAndDrive.csproj",
+      "packagesPath": "C:\\Users\\oudar\\.nuget\\packages\\",
+      "outputPath": "D:\\DSD\\Android_App\\H&D-DSD-Sources-20202407_Bluetooth\\HealthAndDrive\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
-        "/usr/local/share/dotnet/sdk/NuGetFallbackFolder"
+        "C:\\Microsoft\\Xamarin\\NuGet\\",
+        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "/Users/bahamadououry/Desktop/Health_Drive/GitHub/Health-Drive-Technoligies/Android_App/H&D-DSD-Sources-20202407_Bluetooth/NuGet.Config",
-        "/Users/bahamadououry/.config/NuGet/NuGet.Config"
+        "D:\\DSD\\Android_App\\H&D-DSD-Sources-20202407_Bluetooth\\NuGet.Config",
+        "C:\\Users\\oudar\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
       ],
       "originalTargetFrameworks": [
         "netstandard2.0"
       ],
       "sources": {
-        "/Users/bahamadououry/Desktop/Health_Drive/CustomNuggets_07052020/Nuggets": {},
+        "D:\\DSD\\Android_App\\CustomNuggets\\Nuggets\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -5646,7 +5650,7 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
-        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.302/RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.302\\RuntimeIdentifierGraph.json"
       }
     }
   },
@@ -5655,7 +5659,7 @@
       "code": "NU1701",
       "level": "Warning",
       "warningLevel": 1,
-      "message": "Package 'Acr.UserDialogs 6.2.4' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8' instead of the project target framework '.NETStandard,Version=v2.0'. This package may not be fully compatible with your project.",
+      "message": "Le package 'Acr.UserDialogs 6.2.4' a été restauré en utilisant '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8' au lieu du framework cible du projet '.NETStandard,Version=v2.0'. Ce package n'est peut-être pas totalement compatible avec votre projet.",
       "libraryId": "Acr.UserDialogs",
       "targetGraphs": [
         ".NETStandard,Version=v2.0"
@@ -5665,7 +5669,7 @@
       "code": "NU1701",
       "level": "Warning",
       "warningLevel": 1,
-      "message": "Package 'Splat 1.6.2' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8' instead of the project target framework '.NETStandard,Version=v2.0'. This package may not be fully compatible with your project.",
+      "message": "Le package 'Splat 1.6.2' a été restauré en utilisant '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8' au lieu du framework cible du projet '.NETStandard,Version=v2.0'. Ce package n'est peut-être pas totalement compatible avec votre projet.",
       "libraryId": "Splat",
       "targetGraphs": [
         ".NETStandard,Version=v2.0"
