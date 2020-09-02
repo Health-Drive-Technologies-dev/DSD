@@ -1,40 +1,37 @@
 {
   "format": 1,
   "restore": {
-    "D:\\DSD\\Android_App\\H&D-DSD-Sources-20202407_Bluetooth\\HealthAndDrive.Android\\HealthAndDrive.Android.csproj": {}
+    "/Users/bahamadououry/Desktop/Health_Drive/GitHub/Health-Drive-Technoligies/Android_App/H&D-DSD-Sources-20202407_Bluetooth/HealthAndDrive.Android/HealthAndDrive.Android.csproj": {}
   },
   "projects": {
-    "D:\\DSD\\Android_App\\H&D-DSD-Sources-20202407_Bluetooth\\HealthAndDrive.Android\\HealthAndDrive.Android.csproj": {
+    "/Users/bahamadououry/Desktop/Health_Drive/GitHub/Health-Drive-Technoligies/Android_App/H&D-DSD-Sources-20202407_Bluetooth/HealthAndDrive.Android/HealthAndDrive.Android.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\DSD\\Android_App\\H&D-DSD-Sources-20202407_Bluetooth\\HealthAndDrive.Android\\HealthAndDrive.Android.csproj",
+        "projectUniqueName": "/Users/bahamadououry/Desktop/Health_Drive/GitHub/Health-Drive-Technoligies/Android_App/H&D-DSD-Sources-20202407_Bluetooth/HealthAndDrive.Android/HealthAndDrive.Android.csproj",
         "projectName": "HealthAndDrive.Android",
-        "projectPath": "D:\\DSD\\Android_App\\H&D-DSD-Sources-20202407_Bluetooth\\HealthAndDrive.Android\\HealthAndDrive.Android.csproj",
-        "packagesPath": "C:\\Users\\oudar\\.nuget\\packages\\",
-        "outputPath": "D:\\DSD\\Android_App\\H&D-DSD-Sources-20202407_Bluetooth\\HealthAndDrive.Android\\obj\\",
+        "projectPath": "/Users/bahamadououry/Desktop/Health_Drive/GitHub/Health-Drive-Technoligies/Android_App/H&D-DSD-Sources-20202407_Bluetooth/HealthAndDrive.Android/HealthAndDrive.Android.csproj",
+        "packagesPath": "/Users/bahamadououry/.nuget/packages/",
+        "outputPath": "/Users/bahamadououry/Desktop/Health_Drive/GitHub/Health-Drive-Technoligies/Android_App/H&D-DSD-Sources-20202407_Bluetooth/HealthAndDrive.Android/obj/",
         "projectStyle": "PackageReference",
         "skipContentFileWrite": true,
-        "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet\\"
-        ],
         "configFilePaths": [
-          "D:\\DSD\\Android_App\\H&D-DSD-Sources-20202407_Bluetooth\\NuGet.Config",
-          "C:\\Users\\oudar\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "/Users/bahamadououry/Desktop/Health_Drive/GitHub/Health-Drive-Technoligies/Android_App/H&D-DSD-Sources-20202407_Bluetooth/NuGet.Config",
+          "/Users/bahamadououry/.config/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "monoandroid90"
         ],
         "sources": {
-          "D:\\DSD\\Android_App\\CustomNuggets\\Nuggets\\": {},
+          "/Users/bahamadououry/Desktop/Health_Drive/CustomNuggets_07052020/Nuggets": {},
+          "/Users/bahamadououry/Desktop/Health_Drive/CustomNuggets_07052020/Nuggets": {},
+          "/Users/bahamadououry/Desktop/Health_Drive/CustomNuggets_07052020/Nuggets": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "monoandroid90": {
             "projectReferences": {
-              "D:\\DSD\\Android_App\\H&D-DSD-Sources-20202407_Bluetooth\\HealthAndDrive\\HealthAndDrive.csproj": {
-                "projectPath": "D:\\DSD\\Android_App\\H&D-DSD-Sources-20202407_Bluetooth\\HealthAndDrive\\HealthAndDrive.csproj"
+              "/Users/bahamadououry/Desktop/Health_Drive/GitHub/Health-Drive-Technoligies/Android_App/H&D-DSD-Sources-20202407_Bluetooth/HealthAndDrive/HealthAndDrive.csproj": {
+                "projectPath": "/Users/bahamadououry/Desktop/Health_Drive/GitHub/Health-Drive-Technoligies/Android_App/H&D-DSD-Sources-20202407_Bluetooth/HealthAndDrive/HealthAndDrive.csproj"
               }
             }
           }
@@ -123,30 +120,29 @@
         }
       }
     },
-    "D:\\DSD\\Android_App\\H&D-DSD-Sources-20202407_Bluetooth\\HealthAndDrive\\HealthAndDrive.csproj": {
+    "/Users/bahamadououry/Desktop/Health_Drive/GitHub/Health-Drive-Technoligies/Android_App/H&D-DSD-Sources-20202407_Bluetooth/HealthAndDrive/HealthAndDrive.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\DSD\\Android_App\\H&D-DSD-Sources-20202407_Bluetooth\\HealthAndDrive\\HealthAndDrive.csproj",
+        "projectUniqueName": "/Users/bahamadououry/Desktop/Health_Drive/GitHub/Health-Drive-Technoligies/Android_App/H&D-DSD-Sources-20202407_Bluetooth/HealthAndDrive/HealthAndDrive.csproj",
         "projectName": "HealthAndDrive",
-        "projectPath": "D:\\DSD\\Android_App\\H&D-DSD-Sources-20202407_Bluetooth\\HealthAndDrive\\HealthAndDrive.csproj",
-        "packagesPath": "C:\\Users\\oudar\\.nuget\\packages\\",
-        "outputPath": "D:\\DSD\\Android_App\\H&D-DSD-Sources-20202407_Bluetooth\\HealthAndDrive\\obj\\",
+        "projectPath": "/Users/bahamadououry/Desktop/Health_Drive/GitHub/Health-Drive-Technoligies/Android_App/H&D-DSD-Sources-20202407_Bluetooth/HealthAndDrive/HealthAndDrive.csproj",
+        "packagesPath": "/Users/bahamadououry/.nuget/packages/",
+        "outputPath": "/Users/bahamadououry/Desktop/Health_Drive/GitHub/Health-Drive-Technoligies/Android_App/H&D-DSD-Sources-20202407_Bluetooth/HealthAndDrive/obj/",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet\\",
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+          "/usr/local/share/dotnet/sdk/NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "D:\\DSD\\Android_App\\H&D-DSD-Sources-20202407_Bluetooth\\NuGet.Config",
-          "C:\\Users\\oudar\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "/Users/bahamadououry/Desktop/Health_Drive/GitHub/Health-Drive-Technoligies/Android_App/H&D-DSD-Sources-20202407_Bluetooth/NuGet.Config",
+          "/Users/bahamadououry/.config/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "netstandard2.0"
         ],
         "sources": {
-          "D:\\DSD\\Android_App\\CustomNuggets\\Nuggets\\": {},
+          "/Users/bahamadououry/Desktop/Health_Drive/CustomNuggets_07052020/Nuggets": {},
+          "/Users/bahamadououry/Desktop/Health_Drive/CustomNuggets_07052020/Nuggets": {},
+          "/Users/bahamadououry/Desktop/Health_Drive/CustomNuggets_07052020/Nuggets": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -252,7 +248,7 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.302\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.302/RuntimeIdentifierGraph.json"
         }
       }
     }

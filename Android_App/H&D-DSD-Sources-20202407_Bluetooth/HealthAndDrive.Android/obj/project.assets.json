@@ -4440,40 +4440,34 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\oudar\\.nuget\\packages\\": {},
-    "C:\\Microsoft\\Xamarin\\NuGet\\": {}
+    "/Users/bahamadououry/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\DSD\\Android_App\\H&D-DSD-Sources-20202407_Bluetooth\\HealthAndDrive.Android\\HealthAndDrive.Android.csproj",
+      "projectUniqueName": "/Users/bahamadououry/Desktop/Health_Drive/GitHub/Health-Drive-Technoligies/Android_App/H&D-DSD-Sources-20202407_Bluetooth/HealthAndDrive.Android/HealthAndDrive.Android.csproj",
       "projectName": "HealthAndDrive.Android",
-      "projectPath": "D:\\DSD\\Android_App\\H&D-DSD-Sources-20202407_Bluetooth\\HealthAndDrive.Android\\HealthAndDrive.Android.csproj",
-      "packagesPath": "C:\\Users\\oudar\\.nuget\\packages\\",
-      "outputPath": "D:\\DSD\\Android_App\\H&D-DSD-Sources-20202407_Bluetooth\\HealthAndDrive.Android\\obj\\",
+      "projectPath": "/Users/bahamadououry/Desktop/Health_Drive/GitHub/Health-Drive-Technoligies/Android_App/H&D-DSD-Sources-20202407_Bluetooth/HealthAndDrive.Android/HealthAndDrive.Android.csproj",
+      "packagesPath": "/Users/bahamadououry/.nuget/packages/",
+      "outputPath": "/Users/bahamadououry/Desktop/Health_Drive/GitHub/Health-Drive-Technoligies/Android_App/H&D-DSD-Sources-20202407_Bluetooth/HealthAndDrive.Android/obj/",
       "projectStyle": "PackageReference",
       "skipContentFileWrite": true,
-      "fallbackFolders": [
-        "C:\\Microsoft\\Xamarin\\NuGet\\"
-      ],
       "configFilePaths": [
-        "D:\\DSD\\Android_App\\H&D-DSD-Sources-20202407_Bluetooth\\NuGet.Config",
-        "C:\\Users\\oudar\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+        "/Users/bahamadououry/Desktop/Health_Drive/GitHub/Health-Drive-Technoligies/Android_App/H&D-DSD-Sources-20202407_Bluetooth/NuGet.Config",
+        "/Users/bahamadououry/.config/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "monoandroid90"
       ],
       "sources": {
-        "D:\\DSD\\Android_App\\CustomNuggets\\Nuggets\\": {},
+        "/Users/bahamadououry/Desktop/Health_Drive/CustomNuggets_07052020/Nuggets": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "monoandroid90": {
           "projectReferences": {
-            "D:\\DSD\\Android_App\\H&D-DSD-Sources-20202407_Bluetooth\\HealthAndDrive\\HealthAndDrive.csproj": {
-              "projectPath": "D:\\DSD\\Android_App\\H&D-DSD-Sources-20202407_Bluetooth\\HealthAndDrive\\HealthAndDrive.csproj"
+            "/Users/bahamadououry/Desktop/Health_Drive/GitHub/Health-Drive-Technoligies/Android_App/H&D-DSD-Sources-20202407_Bluetooth/HealthAndDrive/HealthAndDrive.csproj": {
+              "projectPath": "/Users/bahamadououry/Desktop/Health_Drive/GitHub/Health-Drive-Technoligies/Android_App/H&D-DSD-Sources-20202407_Bluetooth/HealthAndDrive/HealthAndDrive.csproj"
             }
           }
         }
@@ -4567,7 +4561,7 @@
       "code": "NU1608",
       "level": "Warning",
       "warningLevel": 1,
-      "message": "Version du package détectée en dehors de la contrainte de dépendance : Acr.UserDialogs 6.2.4 nécessite Xamarin.Android.Support.Design (>= 23.3.0 && < 24.0.0) alors que la version Xamarin.Android.Support.Design 28.0.0.3 a été résolue.",
+      "message": "Detected package version outside of dependency constraint: Acr.UserDialogs 6.2.4 requires Xamarin.Android.Support.Design (>= 23.3.0 && < 24.0.0) but version Xamarin.Android.Support.Design 28.0.0.3 was resolved.",
       "libraryId": "Xamarin.Android.Support.Design",
       "targetGraphs": [
         "MonoAndroid,Version=v9.0"
