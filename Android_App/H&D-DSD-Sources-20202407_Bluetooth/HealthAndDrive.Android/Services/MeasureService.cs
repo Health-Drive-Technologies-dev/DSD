@@ -14,6 +14,7 @@ using HealthAndDrive.Models.Protocol;
 using HealthAndDrive.Protocol;
 using HealthAndDrive.Services;
 using HealthAndDrive.Tools;
+using Java.Lang;
 using Microsoft.AppCenter.Analytics;
 using Plugin.BLE;
 using Plugin.BLE.Abstractions.Contracts;
@@ -22,6 +23,7 @@ using Prism.Events;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Timers;
 using Xamarin.Forms;
 using Device = HealthAndDrive.Models.Device;
 
@@ -60,7 +62,19 @@ namespace HealthAndDrive.Droid.Services
         /// The measure Alert Id
         /// </summary>
         private const int MEASURE_ALERT_ID = 10001;
+        /// <summary>
+        /// Notification channel ID for bluetooth reconnection
+        /// </summary>
+        private const string CHANNEL_BLE_ID = "HealthAndDrive.BLEChannel";
+        /// <summary>
+        /// Notification channel name for bluetooth reconnection
+        /// </summary>
+        private const string CHANNEL_BLE_NAME = "HealthAndDrive.BluetoothReconnection";
 
+        /// <summary>
+        /// The Bluetooth Reconnection notification Id
+        /// </summary>
+        private const int MEASURE_NOTIFICATION_BLE_ID = 10002;
         /// <summary>
         /// The tag for the log
         /// </summary>
@@ -108,14 +122,9 @@ namespace HealthAndDrive.Droid.Services
 
 
         /// <summary>
-        /// Used for test
-        /// </summary>
-        private NotificationMeasure TestlastNotificationMeasure;
-
-        /// <summary>
         /// Delay to wait for retrying reconnection
         /// </summary>
-        private int Delay;
+        private int? Delay;
 
         /// <summary>
         /// Used for Age of lastnotification calculation
@@ -137,6 +146,11 @@ namespace HealthAndDrive.Droid.Services
         /// </summary>
         private double gapTimeInSeconde;
 
+        /// <summary>
+        /// Timer for reconnection
+        /// </summary>
+        Timer timer;
+
         IEventAggregator eventAggregator;
 
         private AppSettings appSettings;
@@ -147,6 +161,7 @@ namespace HealthAndDrive.Droid.Services
         private MediaPlayer playerHyper1;
         private MediaPlayer playerHyper2;
         private MediaPlayer playerHyper3;
+
 
         public override IBinder OnBind(Intent intent)
         {
@@ -170,8 +185,6 @@ namespace HealthAndDrive.Droid.Services
             this.Ble = CrossBluetoothLE.Current;
             this.Adapter = CrossBluetoothLE.Current.Adapter;
 
-            // init the delay
-            Delay = 0;
 
             //init des player MP3
             playerHypo3 = new MediaPlayer();
@@ -187,6 +200,7 @@ namespace HealthAndDrive.Droid.Services
 
             // Show the Notifcation 
             this.StartService();
+            
 
             IEventAggregator eventAggregator = (IEventAggregator)App.Current.Container.Resolve(typeof(IEventAggregator));
 
@@ -203,13 +217,33 @@ namespace HealthAndDrive.Droid.Services
             eventAggregator.GetEvent<EndReadingEvent>().Subscribe((value) => { this.MeasureServiceState = MeasureServiceState.WAITING_DATA; });
             eventAggregator.GetEvent<InitMeasureServiceEvent>().Publish("");
 
-            // Init Reconnection Bluetooth process
-            this.ReconnectBluetooth();
+
+            eventAggregator.GetEvent<InitReconnectBluetoothEvent>().Subscribe((value) =>
+            {
+                this.Delay = 0;
+                this.timer = new Timer(1000);
+                this.timer.Elapsed += BLEReconnection;
+                this.timer.Start();
+
+                /*if (this.Delay == null)
+                {
+                    // init the delay and reconnect bluetooth
+                    Delay = 0;
+                    // Init Reconnection Bluetooth process
+                    this.ReconnectBluetooth();
+                }*/
+            });
 
             // Exit event
             eventAggregator.GetEvent<ExitApplicationEvent>().Subscribe(() => { RefreshWidget(); });
 
 
+        }
+
+        private void BLEReconnection(object sender, ElapsedEventArgs e)
+        {
+            this.ReconnectBluetooth();
+            Log.Debug(LOG_TAG, $"Count= {this.Delay}");
         }
 
         /// <summary>
@@ -274,7 +308,7 @@ namespace HealthAndDrive.Droid.Services
                 return;
             }
 
-            var channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationImportance.Default)
+            var channelMeasure = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationImportance.Default)
             {
                 Description = CHANNEL_NAME,
                 LockscreenVisibility = NotificationVisibility.Secret,
@@ -282,8 +316,17 @@ namespace HealthAndDrive.Droid.Services
                 Importance = NotificationImportance.Low
             };
 
+            var channelBLE = new NotificationChannel(CHANNEL_BLE_ID, CHANNEL_BLE_NAME, NotificationImportance.Default)
+            {
+                Description = CHANNEL_BLE_NAME,
+                LockscreenVisibility = NotificationVisibility.Public,
+                Name = CHANNEL_BLE_NAME,
+                Importance = NotificationImportance.High
+            };
+
             var notificationManager = (NotificationManager)GetSystemService(NotificationService);
-            notificationManager.CreateNotificationChannel(channel);
+            notificationManager.CreateNotificationChannel(channelMeasure);
+            notificationManager.CreateNotificationChannel(channelBLE);
         }
 
         /// <summary>
@@ -355,7 +398,7 @@ namespace HealthAndDrive.Droid.Services
                 Log.Error(LOG_TAG, "RegisterDeviceAsync.DeviceConnectionException: " + e);
                 return false;
             }
-            catch (Exception e)
+            catch (System.Exception e)
             {
                 DisposeAll();
                 Log.Error(LOG_TAG, "RegisterDeviceAsync.Exception: " + e);
@@ -415,7 +458,7 @@ namespace HealthAndDrive.Droid.Services
 
                 return true;
             }
-            catch (Exception e)
+            catch (System.Exception e)
             {
                 DisposeAll();
                 Log.Error(LOG_TAG, "InitializeBLEServicesAsync: " + e);
@@ -457,9 +500,14 @@ namespace HealthAndDrive.Droid.Services
                 await txCharacteristic.StartUpdatesAsync();
 
                 Log.Debug(LOG_TAG, "SubsrcibeCharacteristicAsync: subsription successful");
+                if (this.eventAggregator == null)
+                {
+                    this.eventAggregator = (IEventAggregator)App.Current.Container.Resolve(typeof(IEventAggregator));
+                }
+                this.eventAggregator.GetEvent<InitReconnectBluetoothEvent>().Publish("");
                 return true;
             }
-            catch (Exception e)
+            catch (System.Exception e)
             {
                 DisposeAll();
                 Log.Error(LOG_TAG, "SubsrcibeCharacteristicAsync: " + e);
@@ -473,7 +521,7 @@ namespace HealthAndDrive.Droid.Services
         /// <param name="characteristicUUID">The characteristic UUID to write</param>
         /// /// <param name="values">The values to write</param>
         /// <returns></returns>
-        public async Task<bool> WriteCharacteristicAsync(String characteristicUUID, List<byte[]> values)
+        public async Task<bool> WriteCharacteristicAsync(System.String characteristicUUID, List<byte[]> values)
         {
             try
             {
@@ -505,11 +553,11 @@ namespace HealthAndDrive.Droid.Services
 
                 // the state evolves here
                 this.MeasureServiceState = MeasureServiceState.WAITING_DATA;
-               
+
 
                 return true;
             }
-            catch (Exception e)
+            catch (System.Exception e)
             {
                 DisposeAll();
                 Log.Error(LOG_TAG, "WriteCharacteristicAsync: " + e);
@@ -628,7 +676,7 @@ namespace HealthAndDrive.Droid.Services
                 this.Adapter.DisconnectDeviceAsync(this.ConnectedDevice);
                 this.DeviceTypeConnected = new DeviceType();
                 this.BubbleBatteryInfo = new byte[1];
-                
+
             }
             if (this.MyConnectedDevice != null)
             {
@@ -806,27 +854,60 @@ namespace HealthAndDrive.Droid.Services
             }
         }
 
+        public void PushBLENotification()
+        {
+            var resultIntent = new Intent(this, typeof(MainActivity));
+            resultIntent.AddFlags(ActivityFlags.PreviousIsTop);
+
+            resultIntent.AddCategory(Intent.CategoryLauncher);
+            resultIntent.PutExtra("Ble_Reconnect", true); // To be recognized when the user click on notification => Go to bluetoothPage
+
+            //Construct a back stack in order to be able to activate the back button and cross-task navigation in the app
+            //If no back stack : when the back button is clicked : the user go to the launcher screen : not good
+            var stackBuilder = Android.Support.V4.App.TaskStackBuilder.Create(this);
+            stackBuilder.AddNextIntent(resultIntent);
+
+            //Create pending intent to know how to handle the actual activity we're starting from to the resultIntent
+            var resultPendingIntent = PendingIntent.GetActivity(this, 0, resultIntent, PendingIntentFlags.CancelCurrent);
+
+            //Build notification
+            var BLENotification = new NotificationCompat.Builder(this, CHANNEL_BLE_ID)
+                                    .SetAutoCancel(true)
+                                    .SetContentIntent(resultPendingIntent)
+                                    .SetContentTitle("Bluetooth connexion")
+                                    .SetSmallIcon(Resource.Drawable.sigle_logo_splash_grey)
+                                    .SetStyle(new NotificationCompat.BigTextStyle()
+                                        .BigText("La connexion bluetooth a rencontré un problème:\n" +
+                                        "Cliquez pour vous reconnecter à votre lecteur.")
+                                        .SetSummaryText("Erreur Bluetooth"))
+                                    .SetContentText("Erreur Bluetooth")
+                                    .SetLargeIcon(BitmapFactory.DecodeResource(Android.App.Application.Context.Resources, Resource.Drawable.ic_bluetooth_orange));
+
+            var notificationManager = NotificationManagerCompat.From(this);
+            CreateNotificationChannel();
+            notificationManager.Notify(MEASURE_NOTIFICATION_BLE_ID, BLENotification.Build());
+
+
+        }
         public override void OnDestroy()
         {
             Log.Debug(LOG_TAG, "OnDestroy: called");
+            //this.Delay = null;
+            this.timer.Stop();
+            this.timer.Dispose();
             base.OnDestroy();
         }
 
-
-        /// <summary>
-        /// Fonction Bluetooth reconnection
-        /// Wait a certain delay and check the state of connection
-        /// if ( not connectet and are not reading data ) then reconnectet the last connected device
-        /// </summary>
-        public async void ReconnectBluetooth()
+        public void ReconnectBluetooth()
         {
-
+            if (this.appSettings == null)
+            {
+                this.appSettings = (AppSettings)App.Current.Container.Resolve(typeof(AppSettings));
+            }
             // Show fisrt step 
             if (Delay == 0)
             {
                 Log.Debug(LOG_TAG, "!!!!!!!!------------- In ReconnectionBluetooth Function -------------------!!!!!!");
-                /*this.TestlastNotificationMeasure = new NotificationMeasure();
-                this.TestlastNotificationMeasure.NotificationMeasureDate = new DateTimeOffset(2020, 07, 29, 9, 10, 0, TimeSpan.Zero); //The date is in UTC time*/
                 if (this.lastNotificationMeasure != null)
                 {
                     // Show values
@@ -848,7 +929,7 @@ namespace HealthAndDrive.Droid.Services
             }
 
             // Check delay
-            if ((Delay >= this.appSettings.RetryBluetoothDelay) && (this.MeasureServiceState == MeasureServiceState.WAITING_DATA))
+            if ((Delay >= this.appSettings.RetryBluetoothDelay) && (this.CurrentState() == MeasureServiceState.WAITING_DATA))
             {
 
                 // Retry connection
@@ -866,63 +947,73 @@ namespace HealthAndDrive.Droid.Services
                     // if most than 15 minutes reconnect the last device
                     if (this.gapTimeInSeconde >= RetryDelay)
                     {
-                        if (this.MyConnectedDevice != null)
+                        this.timer.Stop();
+                        NotificationMeasure EmptyNotification = new NotificationMeasure()
                         {
-                            await Task.Run(() => { UnregisterDevice(this.MyConnectedDevice); });
-                        }
-
-                        if (this.eventAggregator == null)
-                            eventAggregator = (IEventAggregator)App.Current.Container.Resolve(typeof(IEventAggregator));
+                            NotificationMessage = "---",
+                            IsAlert = false,
+                            NotificationMeasureDate = DateTime.Now,
+                            MeasureTrend = MeasureTrend.Constant
+                        };
+                        this.PushMeasureNotification(EmptyNotification);
+                        this.PushBLENotification();
                         Log.Debug(LOG_TAG, "!!!!!!!!!!!!!!!--------Bluetooth Reconnection asked ------------------!!!!");
-                        // Publish event Reconnection Bluetooth
-                        /* this.eventAggregator.GetEvent<ReconnectBLEEvent>().Publish("");*/
-                        eventAggregator.GetEvent<ReconnectBLEEvent>().Publish("");
                         // For debug
                         Log.Debug(LOG_TAG, "!!!!!!!!------------- Event Reconnection Bluetooth published  -------------------!!!!!!");
                         // Re init Delay
                         this.Delay = 0;
-
+                        this.timer.Start();
                     }
 
                 }
                 else // Notification null until 15 minutes problem !!! 
                 {
-                    if (this.MyConnectedDevice != null)
+                    this.timer.Stop();
+                    NotificationMeasure EmptyNotification = new NotificationMeasure()
                     {
-                        await Task.Run(() => { UnregisterDevice(this.MyConnectedDevice); });
-                    }
-                    if (this.eventAggregator == null)
-                        eventAggregator = (IEventAggregator)App.Current.Container.Resolve(typeof(IEventAggregator));
-                    // reconnection
-                    eventAggregator.GetEvent<ReconnectBLEEvent>().Publish("");
+                        NotificationMessage = "---",
+                        IsAlert = false,
+                        NotificationMeasureDate = DateTime.Now,
+                        MeasureTrend = MeasureTrend.Constant
+                    };
+                    this.PushMeasureNotification(EmptyNotification);
+                    this.PushBLENotification();
 
                     // For debug
                     Log.Debug(LOG_TAG, "!!!!!!!!------------- Event Reconnection Bluetooth published  -------------------!!!!!!");
-                    this.Delay = 0;
 
+                    //Init timer
+                    this.Delay = 0;
+                    this.timer.Start();
                 }
             }
-            if ((Delay >= this.appSettings.RetryBluetoothDelay) && (this.MeasureServiceState == MeasureServiceState.OFF))
+            if ((Delay >= this.appSettings.RetryBluetoothDelay) && (this.CurrentState() == MeasureServiceState.OFF))
             {
-                if (this.MyConnectedDevice != null)
+                this.timer.Stop();
+                NotificationMeasure EmptyNotification = new NotificationMeasure()
                 {
-                    await Task.Run(() => { UnregisterDevice(this.MyConnectedDevice); });
-                }
-                if (this.eventAggregator == null)
-                    eventAggregator = (IEventAggregator)App.Current.Container.Resolve(typeof(IEventAggregator));
-                eventAggregator.GetEvent<ReconnectBLEEvent>().Publish("");
+                    NotificationMessage = "---",
+                    IsAlert = false,
+                    NotificationMeasureDate = DateTime.Now,
+                    MeasureTrend = MeasureTrend.Constant
+                };
+                this.PushMeasureNotification(EmptyNotification);
+                this.PushBLENotification();
 
                 // For debug
                 Log.Debug(LOG_TAG, "!!!!!!!!------------- Event Reconnection Bluetooth published  -------------------!!!!!!");
+
+                //Init timer
                 this.Delay = 0;
+                this.timer.Start();
             }
             else
             {
                 Delay++;
             }
 
-            // Task Delay when a device is connected
-            await Task.Delay(this.appSettings.MEASURE_SERVICE_RETRY_DEFAULT_TIME * 1000).ContinueWith(t => this.ReconnectBluetooth());
+           /* // Task Delay when a device is connected (replace by the timer which can be stoped, started or disposed
+            await Task.Delay(this.appSettings.MEASURE_SERVICE_RETRY_DEFAULT_TIME * 1000).ContinueWith(t => this.ReconnectBluetooth());*/
         }
     }
 

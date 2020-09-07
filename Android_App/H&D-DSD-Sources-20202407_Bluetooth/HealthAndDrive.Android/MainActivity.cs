@@ -16,6 +16,7 @@ using Android.Provider;
 using Android.Runtime;
 using Prism.Events;
 using HealthAndDrive.Events;
+using Android.Widget;
 
 namespace HealthAndDrive.Droid
 {
@@ -162,6 +163,11 @@ namespace HealthAndDrive.Droid
         {
             base.OnNewIntent(intent);
             Intent = intent;
+            if(intent.HasExtra("Ble_Reconnect"))
+            {
+                NotificationBLEClickedON(intent);
+                return;
+            }
             NotificationClickedOn(intent);
         }
 
@@ -174,13 +180,26 @@ namespace HealthAndDrive.Droid
             var navigationService = (Xamarin.Forms.Application.Current as App).PrismNavigation;
             Device.BeginInvokeOnMainThread(async () => await navigationService.NavigateAsync("RootPage/PrismNavigationPage/MainTabbedPage?selectedTab=DrivePage"));
         }
+        /// <summary>
+        /// Action when the BLE notification is clicked on
+        /// </summary>
+        /// <param name="intent"></param>
+        private void NotificationBLEClickedON(Intent intent)
+        {
+            IEventAggregator eventAggregator = (IEventAggregator)App.Current.Container.Resolve(typeof(IEventAggregator));
+            eventAggregator.GetEvent<ReconnectBLEEvent>().Publish("");
+            var navigationService = (Xamarin.Forms.Application.Current as App).PrismNavigation;
+            Device.BeginInvokeOnMainThread(async () => await navigationService.NavigateAsync("RootPage/PrismNavigationPage/MainTabbedPage?selectedTab=BluetoothPage"));
+            Toast.MakeText(this, "Veuillez re-initialiser votre lecteur", ToastLength.Long).Show();
+            
+        }
 
         protected override void OnDestroy()
         {
             //ContainerResolve
             // if(widget)
             System.Diagnostics.Debug.WriteLine($"OnDestroy raised");
-            
+            //StopService(this.measureService);
             base.OnDestroy();
 
             // Destroy Widget Service

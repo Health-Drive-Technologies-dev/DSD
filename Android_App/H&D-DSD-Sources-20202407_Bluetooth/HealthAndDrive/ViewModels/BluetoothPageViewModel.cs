@@ -159,6 +159,7 @@ namespace HealthAndDrive.ViewModels
         /// </summary>
         public readonly IGlucoseMeasureRepository GlucoseMeasureRepository;
 
+
         /// <summary>
         /// The device associated to the current user
         /// NULL if the current user does not have any device bounded
@@ -558,7 +559,6 @@ namespace HealthAndDrive.ViewModels
                 this.CalibrationSourceValue = CalibrationRevisedValue;
 
                 Analytics.TrackEvent(AnalyticsEvent.BluetoothCalibrationChanged);
-
             });
 
             //
@@ -588,6 +588,19 @@ namespace HealthAndDrive.ViewModels
             {
                 this.CalibrationSourceValue = value.NewMeasure;
                 this.CalibrationRevisedValue = value.NewMeasure;
+            });
+            // Subscribe to the ReconnectionBluetoothEvent
+            this.eventAggregator.GetEvent<ReconnectBLEEvent>().Subscribe((value) =>
+            {
+                if (this.MeasureService == null)
+                {
+                    // intialize the measure service. We know he's awaken so we can get the dependancy
+                    this.MeasureService = Xamarin.Forms.DependencyService.Get<IMeasure>(DependencyFetchTarget.GlobalInstance);
+                }
+
+                //*Analytics.TrackEvent(AnalyticsEvent.BluetoothReconnectionActivated);
+                this.UnregisterDevice(true);
+
             });
 
         }

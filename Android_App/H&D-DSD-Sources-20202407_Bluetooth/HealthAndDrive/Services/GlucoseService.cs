@@ -92,22 +92,6 @@ namespace HealthAndDrive.Services
                 
             });
 
-            // Subscribe to the ReconnectionBluetoothEvent
-            this.eventAggregator.GetEvent<ReconnectBLEEvent>().Subscribe((value) =>
-            {
-                // intialize the measure service. We know he's awaken so we can get the dependancy
-                this.measureService = Xamarin.Forms.DependencyService.Get<IMeasure>(DependencyFetchTarget.GlobalInstance);
-
-                /*Analytics.TrackEvent(AnalyticsEvent.BluetoothReconnectionActivated);*/
-                if (this.IsWakingUpDevice != true)
-                {
-                    Xamarin.Forms.Device.BeginInvokeOnMainThread(() => { //To be tested !
-                        WakeUpMeasureServiceAsync();
-                    });
-                }
-                // awake device
-                
-            });
 
             // subscription to the LastMeasureReceivedEvent
             // This event could be raised by the Hidden page for the purpose of simulated data

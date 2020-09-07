@@ -2,7 +2,7 @@
 
 namespace HealthAndDrive.Events
 {
-    public class ReconnectBluetoothEvent : PubSubEvent<string>
+    public class InitReconnectBluetoothEvent : PubSubEvent<string>
     {
         
     }
