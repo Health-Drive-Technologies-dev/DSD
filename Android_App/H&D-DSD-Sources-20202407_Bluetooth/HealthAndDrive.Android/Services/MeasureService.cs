@@ -875,7 +875,10 @@ namespace HealthAndDrive.Droid.Services
                                     .SetAutoCancel(true)
                                     .SetContentIntent(resultPendingIntent)
                                     .SetContentTitle("Bluetooth connexion")
+                                    .SetPriority(NotificationCompat.PriorityHigh)
+                                    .SetCategory(NotificationCompat.CategoryMessage)
                                     .SetSmallIcon(Resource.Drawable.sigle_logo_splash_grey)
+                                    .SetVisibility(NotificationCompat.VisibilityPublic)
                                     .SetStyle(new NotificationCompat.BigTextStyle()
                                         .BigText("La connexion bluetooth a rencontré un problème:\n" +
                                         "Cliquez pour vous reconnecter à votre lecteur.")
